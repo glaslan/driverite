@@ -26,9 +26,9 @@ export default function DrivingScore({ valueName = "Name not set", value = 1 }) 
       <div style={{
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-between", // This will push the elements to the edges
-        alignItems: "center", // Aligns items vertically in the center
-        width: "100%", // Ensures the container takes up full width
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
         background: "white",
         border: "10px solid white",
         borderRadius: "10px",
