@@ -1,4 +1,6 @@
-import { Box, Button, Typography } from "@mui/material";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Button, Text } from 'react-native-paper';
 
 type StartPageProps = {
     setTripStarted: React.Dispatch<React.SetStateAction<boolean>>;
@@ -6,37 +8,75 @@ type StartPageProps = {
 
 const StartPage: React.FC<StartPageProps> = ({ setTripStarted }) => {
     return (
-        <>
-        <Box sx={{ 
-            display: "flex", 
-            flexDirection: "column", 
-            justifyContent: "center", 
-            height: "50vh", 
-            margin: "0 auto",
-            textAlign: "left" 
-        }}>
-            <Typography sx={{ fontSize: 16, lineHeight: 1.1 }}>Welcome to</Typography>
-            <Typography sx={{ fontSize: 40, fontWeight: 600, lineHeight: 1.1 }}>Driverite</Typography>
-            <Typography sx={{ fontSize: 16, lineHeight: 1.1 }}>Press Start Trip to begin...</Typography>
-        </Box>
-        <Box sx={{
-            display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", marginTop: "75px", gap: "25px"
-        }}>
-        <Button 
-            variant="contained" 
-            sx={{ borderRadius: "20px", width: "50%", height: "50px" }}
-            onClick={() => {setTripStarted(true)}}
-        >
-            Start Trip
-        </Button>
-        <Typography sx={{textAlign: "center", fontSize: 14, width: "75%"}}>
-            Always make sure your device is 
-            hands free while driving. Start your
-            trip before you begin driving.
-        </Typography>
-        </Box>
-        </>
+        <View style={styles.background}>
+            <View style={styles.welcomeContainer}>
+                <Text style={styles.welcomeText}>Welcome to</Text>
+                <Text style={styles.appNameText}>Driverite</Text>
+                <Text style={styles.instructionsText}>Press Start Trip to begin...</Text>
+            </View>
+            <View style={styles.buttonContainer}>
+                <Button 
+                    mode="contained" 
+                    style={styles.startButton} 
+                    onPress={() => setTripStarted(true)}
+                >
+                    Start Trip
+                </Button>
+                <Text style={styles.warningText}>
+                    Always make sure your device is hands-free while driving. Start your trip before you begin driving.
+                </Text>
+            </View>
+        </View>
     );
-}
+};
+
+const styles = StyleSheet.create({
+    background: {
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        backgroundColor: "white"
+    },
+    welcomeContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        height: '50%',
+        marginHorizontal: 'auto',
+        textAlign: 'left',
+    },
+    welcomeText: {
+        fontSize: 16,
+        lineHeight: 18,
+    },
+    appNameText: {
+        fontSize: 40,
+        fontWeight: '600',
+        lineHeight: 44,
+    },
+    instructionsText: {
+        fontSize: 16,
+        lineHeight: 18,
+    },
+    buttonContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 75,
+        gap: 25,
+    },
+    startButton: {
+        borderRadius: 20,
+        width: '50%',
+        height: 50,
+        justifyContent: 'center',
+    },
+    warningText: {
+        textAlign: 'center',
+        fontSize: 14,
+        width: '75%',
+    },
+});
 
 export default StartPage;

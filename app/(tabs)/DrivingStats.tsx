@@ -1,8 +1,8 @@
-import DrivingScore from '@/components/DrivingScore';
-import { Box, Button } from '@mui/material';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Button, Card, Text } from 'react-native-paper';
 import CircularProgress from 'react-native-circular-progress-indicator';
-
+import DrivingScore from '@/components/DrivingScore';
 
 interface DrivingScoresProps {
   scores: {
@@ -42,14 +42,8 @@ export default function DrivingStats() {
   }, []);
 
   return (
-    <>
-      <Box sx={{
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "25%",
-          alignItems: "center",
-          width: "100%"
-      }}>
+    <View style={styles.background}>
+      <View style={styles.progressContainer}>
         <CircularProgress
           value={overallScore}
           radius={120}
@@ -64,39 +58,58 @@ export default function DrivingStats() {
             { color: '#9d1818', value: 0 },
             { color: 'red', value: 50 },
             { color: 'orange', value: 60 },
-            { color: `#e7db43`, value: 70 },
+            { color: '#e7db43', value: 70 },
             { color: '#89e03b', value: 100 },
           ]}
         />
-      </Box>
-      <Box sx={{
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "75px",
-          gap: "10px",
-          flexDirection: "column",
-          alignItems: "center",
-          width: "100%",
-      }}>
+      </View>
+
+      <View style={styles.scoresContainer}>
         <DrivingScores scores={scores} />
-      </Box>
-    </>
+      </View>
+    </View>
   );
-};
+}
 
 function DrivingScores({ scores }: DrivingScoresProps) {
   return (
-    <Box sx={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-        alignItems: "center",
-        width: "90%",
-        gap: "10px"
-    }}>
+    <View style={styles.scoresList}>
       {Object.keys(scores).map((key) => (
         <DrivingScore key={key} valueName={key} value={Math.round(scores[key as keyof typeof scores])} />
       ))}
-    </Box>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  background: {
+    display: "flex",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "white"
+  },
+  progressContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: '25%',
+    alignItems: 'center',
+    width: '100%',
+  },
+  scoresContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: 75,
+    gap: 10,
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
+  },
+  scoresList: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '90%',
+    gap: 10,
+  },
+});
