@@ -1,5 +1,5 @@
 import DrivingScore from '@/components/DrivingScore';
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import CircularProgress from 'react-native-circular-progress-indicator';
 
@@ -43,7 +43,7 @@ export default function DrivingStats() {
 
   return (
     <>
-      <div style={{
+      <Box sx={{
           display: "flex",
           justifyContent: "center",
           marginTop: "25%",
@@ -68,8 +68,8 @@ export default function DrivingStats() {
             { color: '#89e03b', value: 100 },
           ]}
         />
-      </div>
-      <div style={{
+      </Box>
+      <Box sx={{
           display: "flex",
           justifyContent: "center",
           marginTop: "75px",
@@ -79,14 +79,14 @@ export default function DrivingStats() {
           width: "100%",
       }}>
         <DrivingScores scores={scores} />
-      </div>
+      </Box>
     </>
   );
 };
 
 function DrivingScores({ scores }: DrivingScoresProps) {
   return (
-    <div style={{
+    <Box sx={{
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
@@ -97,6 +97,6 @@ function DrivingScores({ scores }: DrivingScoresProps) {
       {Object.keys(scores).map((key) => (
         <DrivingScore key={key} valueName={key} value={Math.round(scores[key as keyof typeof scores])} />
       ))}
-    </div>
+    </Box>
   );
 }

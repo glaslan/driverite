@@ -1,4 +1,4 @@
-import { Button, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 type StartPageProps = {
     setTripStarted: React.Dispatch<React.SetStateAction<boolean>>;
@@ -7,7 +7,7 @@ type StartPageProps = {
 const StartPage: React.FC<StartPageProps> = ({ setTripStarted }) => {
     return (
         <>
-        <div style={{ 
+        <Box sx={{ 
             display: "flex", 
             flexDirection: "column", 
             justifyContent: "center", 
@@ -18,8 +18,8 @@ const StartPage: React.FC<StartPageProps> = ({ setTripStarted }) => {
             <Typography sx={{ fontSize: 16, lineHeight: 1.1 }}>Welcome to</Typography>
             <Typography sx={{ fontSize: 40, fontWeight: 600, lineHeight: 1.1 }}>Driverite</Typography>
             <Typography sx={{ fontSize: 16, lineHeight: 1.1 }}>Press Start Trip to begin...</Typography>
-        </div>
-        <div style={{
+        </Box>
+        <Box sx={{
             display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", marginTop: "75px", gap: "25px"
         }}>
         <Button 
@@ -34,7 +34,7 @@ const StartPage: React.FC<StartPageProps> = ({ setTripStarted }) => {
             hands free while driving. Start your
             trip before you begin driving.
         </Typography>
-        </div>
+        </Box>
         </>
     );
 }

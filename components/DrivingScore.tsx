@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import CircularProgress from 'react-native-circular-progress-indicator';
 
@@ -23,7 +23,7 @@ export default function DrivingScore({ valueName = "Name not set", value = 1 }) 
 
   return (
     <>
-      <div style={{
+      <Box sx={{
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -33,7 +33,7 @@ export default function DrivingScore({ valueName = "Name not set", value = 1 }) 
         border: "10px solid white",
         borderRadius: "10px",
       }}>
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
           <CircularProgress
             value={value}
             radius={30}
@@ -49,12 +49,12 @@ export default function DrivingScore({ valueName = "Name not set", value = 1 }) 
               { color: '#89e03b', value: 100 },
             ]}
           />
-        </div>
+        </Box>
         
         <Typography style={{ marginLeft: 25, textAlign: "left", flex: 1, fontSize: 18 }}>
           <b style={{ color: getMessageColor() }}>{getMessage()}</b> {valueName}!
         </Typography>
-      </div>
+      </Box>
     </>
   );
 }
