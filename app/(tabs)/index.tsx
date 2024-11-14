@@ -9,6 +9,7 @@ import { useState } from 'react';
 import StartPage from '@/components/StartPage';
 import TripPage from '@/components/TripPage';
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
+import MapAccelerometer from '@/components/MapAccelerometer';
 
 export default function HomeScreen() {
   const [tripStarted, setTripStarted] = useState(false);
@@ -26,7 +27,7 @@ export default function HomeScreen() {
 
   return (
     <PaperProvider theme={theme}>
-    {!tripStarted ? <StartPage setTripStarted={setTripStarted} /> : <TripPage />}
+    {!tripStarted ? <StartPage setTripStarted={setTripStarted} /> : <MapAccelerometer />}
     </PaperProvider>
   );
 }
