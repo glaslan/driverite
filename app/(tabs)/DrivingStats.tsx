@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Card, Text } from 'react-native-paper';
+import { Button, Card, Surface, Text } from 'react-native-paper';
 import CircularProgress from 'react-native-circular-progress-indicator';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import DrivingScore from '@/components/DrivingScore';
 
 interface DrivingScoresProps {
@@ -16,10 +17,14 @@ interface DrivingScoresProps {
 export default function DrivingStats() {
   const [overallScore, setOverallScore] = useState<number>(0);
   const [scores, setScores] = useState({
-    Acceleration: Math.random() * 100,
-    Speed: Math.random() * 100,
-    Braking: Math.random() * 100,
-    Cornering: Math.random() * 100,
+    // Acceleration: Math.random() * 100,
+    // Speed: Math.random() * 100,
+    // Braking: Math.random() * 100,
+    // Cornering: Math.random() * 100,
+    Acceleration: 100,
+    Speed: 100,
+    Braking: 100,
+    Cornering: 100,
   });
 
   function getOverallScore() {
@@ -43,24 +48,48 @@ export default function DrivingStats() {
 
   return (
     <View style={styles.background}>
+      <Text style={{color: "black", display: "flex", alignSelf: 'center', fontSize: 30, marginTop: "20%"}}>Driving Score</Text>
+      <View style={{display: 'flex', flexDirection: "row", width: "100%", height: "12%", padding: 5, gap: 5, justifyContent: 'space-between', marginTop: "8%"}}>
+        <View style={{ backgroundColor: "#ffb8b8", flex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10,}}><Text>Hello</Text></View>
+        <View style={{ backgroundColor: "orange", flex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10,}}><Text>Hello</Text></View>
+        <View style={{ backgroundColor: "green", flex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10,}}><Text>Hello</Text></View>
+      </View>
+
       <View style={styles.progressContainer}>
+      {/* <AnimatedCircularProgress
+  size={250}
+  width={50}
+  fill={overallScore}
+  tintColor="#00e0ff"
+  backgroundColor="#3d5875">
+  {
+    (fill) => (
+      <Text style={{ fontSize: 50 }}>
+        { overallScore }
+      </Text>
+    )
+  }
+</AnimatedCircularProgress> */}
         <CircularProgress
           value={overallScore}
-          radius={120}
+          radius={135}
           progressValueColor={'black'}
           maxValue={100}
           title={'/ 100'}
           titleColor={'black'}
-          titleStyle={{ fontWeight: 'bold' }}
-          activeStrokeWidth={20}
+          titleStyle={{ fontWeight: "300", fontSize: 20 }}
+          activeStrokeWidth={50}
+          inActiveStrokeWidth={40}
           duration={1000}
-          strokeColorConfig={[
-            { color: '#9d1818', value: 0 },
-            { color: 'red', value: 50 },
-            { color: 'orange', value: 60 },
-            { color: '#e7db43', value: 70 },
-            { color: '#89e03b', value: 100 },
-          ]}
+          activeStrokeColor={'red'}
+          activeStrokeSecondaryColor={'green'}
+          // strokeColorConfig={[
+          //   { color: '#9d1818', value: 0 },
+          //   { color: 'red', value: 50 },
+          //   { color: 'orange', value: 60 },
+          //   { color: '#e7db43', value: 70 },
+          //   { color: '#89e03b', value: 100 },
+          // ]}
         />
       </View>
 
@@ -73,11 +102,11 @@ export default function DrivingStats() {
 
 function DrivingScores({ scores }: DrivingScoresProps) {
   return (
-    <View style={styles.scoresList}>
+    <Surface style={styles.surface}>
       {Object.keys(scores).map((key) => (
         <DrivingScore key={key} valueName={key} value={Math.round(scores[key as keyof typeof scores])} />
       ))}
-    </View>
+    </Surface>
   );
 }
 
@@ -91,14 +120,14 @@ const styles = StyleSheet.create({
   progressContainer: {
     display: 'flex',
     justifyContent: 'center',
-    marginTop: '25%',
+    marginTop: 40,
     alignItems: 'center',
     width: '100%',
   },
   scoresContainer: {
     display: 'flex',
     justifyContent: 'center',
-    marginTop: 75,
+    marginTop: 40,
     gap: 10,
     flexDirection: 'column',
     alignItems: 'center',
@@ -111,5 +140,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '90%',
     gap: 10,
+  },
+  surface: {
+    backgroundColor: "white",
+    padding: 20,
+    width: "95%",
+    display: "flex",
+    borderRadius: 35,
   },
 });

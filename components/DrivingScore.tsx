@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import CircularProgress from 'react-native-circular-progress-indicator';
-import { Card } from 'react-native-paper';
+import { Icon } from 'react-native-paper';
 
 export default function DrivingScore({ valueName = "Name not set", value = 1 }) {
   const [score, setScore] = useState(value);
@@ -22,48 +21,34 @@ export default function DrivingScore({ valueName = "Name not set", value = 1 }) 
     else return "#9d1818";
   }
 
-  return (
-    <Card style={styles.card}>
-      <View style={styles.container}>
-        <View style={styles.progressContainer}>
-          <CircularProgress
-            value={value}
-            radius={30}
-            progressValueColor={'black'}
-            maxValue={100}
-            titleStyle={{ fontWeight: 'bold' }}
-            duration={250}
-            strokeColorConfig={[
-              { color: '#9d1818', value: 0 },
-              { color: 'red', value: 50 },
-              { color: 'orange', value: 60 },
-              { color: '#e7db43', value: 70 },
-              { color: '#89e03b', value: 100 },
-            ]}
-          />
-        </View>
+  function getMessageIcon() {
+    if (value >= 95) return "star-circle";
+    else if (value >= 80) return "check-circle";
+    else if (value >= 70) return "minus-circle";
+    else if (value >= 50) return "alert-circle";
+    else return "close-circle";
+  }
 
-        <Text style={[styles.message, { color: getMessageColor() }]}>
-          <Text style={styles.messageText}>{getMessage()}</Text> {valueName}!
-        </Text>
-      </View>
-    </Card>
+  return (
+    <View style={styles.container}>
+      <Icon
+        source={getMessageIcon()}
+        color={getMessageColor()}
+        size={20}
+      />
+      <Text style={[styles.message, { color: getMessageColor() }]}>
+        <Text style={styles.messageText}>{getMessage()}</Text> {valueName}!
+      </Text>
+      <Text style={styles.score}>{score}/100</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    width: '100%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 10,
-  },
   container: {
+    padding: 5,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  progressContainer: {
     alignItems: 'center',
   },
   message: {
@@ -74,5 +59,11 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontWeight: 'bold',
+  },
+  score: {
+    textAlign: 'right',
+    fontSize: 12,
+    marginRight: 25,
+    color: "grey"
   },
 });
