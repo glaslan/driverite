@@ -17,14 +17,14 @@ interface DrivingScoresProps {
 export default function DrivingStats() {
   const [overallScore, setOverallScore] = useState<number>(0);
   const [scores, setScores] = useState({
-    // Acceleration: Math.random() * 100,
-    // Speed: Math.random() * 100,
-    // Braking: Math.random() * 100,
-    // Cornering: Math.random() * 100,
-    Acceleration: 100,
-    Speed: 100,
-    Braking: 100,
-    Cornering: 100,
+    Acceleration: Math.random() * 100,
+    Speed: Math.random() * 100,
+    Braking: Math.random() * 100,
+    Cornering: Math.random() * 100,
+    // Acceleration: 100,
+    // Speed: 100,
+    // Braking: 100,
+    // Cornering: 100,
   });
 
   function getOverallScore() {
@@ -49,27 +49,27 @@ export default function DrivingStats() {
   return (
     <View style={styles.background}>
       <Text style={{color: "black", display: "flex", alignSelf: 'center', fontSize: 30, marginTop: "20%"}}>Driving Score</Text>
-      <View style={{display: 'flex', flexDirection: "row", width: "100%", height: "12%", padding: 5, gap: 5, justifyContent: 'space-between', marginTop: "8%"}}>
-        <View style={{ backgroundColor: "#ffb8b8", flex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10,}}><Text>Hello</Text></View>
-        <View style={{ backgroundColor: "orange", flex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10,}}><Text>Hello</Text></View>
-        <View style={{ backgroundColor: "green", flex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10,}}><Text>Hello</Text></View>
+      <View style={{display: 'flex', flexDirection: "row", width: "100%", height: "13%", padding: 10, gap: 5, justifyContent: 'space-between', marginTop: "5%"}}>
+        <QuickTip messageOne="You've gone on" value={2} messageTwo="trips." color="#c7e0ff" />
+        <QuickTip messageOne="You've spent" value={1284} messageTwo="minutes driving." color="#fff8c2" />
+        <QuickTip messageOne="You're number" value={27} messageTwo="in the world." color="#c7ffc7" />
       </View>
 
       <View style={styles.progressContainer}>
-      {/* <AnimatedCircularProgress
-  size={250}
-  width={50}
-  fill={overallScore}
-  tintColor="#00e0ff"
-  backgroundColor="#3d5875">
-  {
-    (fill) => (
-      <Text style={{ fontSize: 50 }}>
-        { overallScore }
-      </Text>
-    )
-  }
-</AnimatedCircularProgress> */}
+    {/* <AnimatedCircularProgress
+          size={250}
+          width={50}
+          fill={overallScore}
+          tintColor="#00e0ff"
+          backgroundColor="#3d5875">
+          {
+            (fill) => (
+              <Text style={{ fontSize: 50 }}>
+                { overallScore }
+              </Text>
+            )
+          }
+        </AnimatedCircularProgress> */}
         <CircularProgress
           value={overallScore}
           radius={135}
@@ -109,6 +109,26 @@ function DrivingScores({ scores }: DrivingScoresProps) {
     </Surface>
   );
 }
+
+interface QuickTipProps {
+  messageOne: string;
+  value: number;
+  messageTwo: string;
+  color: string;
+}
+
+function QuickTip({ messageOne, value, messageTwo, color }: QuickTipProps) {
+  return (
+    <View style={{ backgroundColor: color, flex: 1, justifyContent: 'center', borderRadius: 10 }}>
+      <View style={{padding: 10}}>
+      <Text style={{fontWeight: "500", fontSize: 12, textAlign: 'left'}}>{messageOne}</Text>
+      <Text style={{fontWeight: "800", fontSize: 18, textAlign: 'left'}}>{value}</Text>
+      <Text style={{fontWeight: "500", fontSize: 12, textAlign: 'left'}}>{messageTwo}</Text>
+      </View>
+    </View>
+  );
+}
+
 
 const styles = StyleSheet.create({
   background: {
