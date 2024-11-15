@@ -25,6 +25,10 @@ export default function DrivingStats() {
     // Speed: 100,
     // Braking: 100,
     // Cornering: 100,
+    // Acceleration: 50,
+    // Speed: 50,
+    // Braking: 50,
+    // Cornering: 50,
   });
 
   function getOverallScore() {
@@ -39,7 +43,7 @@ export default function DrivingStats() {
     }
 
     let average: number = sum / total;
-    setOverallScore(average);
+    setOverallScore(Math.round(average));
   }
 
   useEffect(() => {
@@ -56,21 +60,27 @@ export default function DrivingStats() {
       </View>
 
       <View style={styles.progressContainer}>
-    {/* <AnimatedCircularProgress
+    <AnimatedCircularProgress
           size={250}
           width={50}
           fill={overallScore}
-          tintColor="#00e0ff"
-          backgroundColor="#3d5875">
+          // tintColor="#00e0ff"
+          backgroundColor="#3d5875"
+          rotation={360}>
           {
             (fill) => (
-              <Text style={{ fontSize: 50 }}>
-                { overallScore }
-              </Text>
+              <View style={{alignItems: "center"}}>
+                <Text style={{ fontSize: 60, fontWeight: 800 }}>
+                  { overallScore }
+                </Text>
+                <Text>
+                  / 100
+                </Text>
+              </View>
             )
           }
-        </AnimatedCircularProgress> */}
-        <CircularProgress
+        </AnimatedCircularProgress>
+        {/* <CircularProgress
           value={overallScore}
           radius={135}
           progressValueColor={'black'}
@@ -90,7 +100,7 @@ export default function DrivingStats() {
           //   { color: '#e7db43', value: 70 },
           //   { color: '#89e03b', value: 100 },
           // ]}
-        />
+        /> */}
       </View>
 
       <View style={styles.scoresContainer}>
