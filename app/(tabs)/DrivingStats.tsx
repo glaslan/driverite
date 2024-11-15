@@ -64,7 +64,7 @@ export default function DrivingStats() {
           size={250}
           width={50}
           fill={overallScore}
-          // tintColor="#00e0ff"
+          tintColor="#00e0ff"
           backgroundColor="#3d5875"
           rotation={360}>
           {
