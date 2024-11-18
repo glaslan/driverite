@@ -10,6 +10,12 @@ export default function ViewTripProgress(){
     //const [accScore, setAccelerationScore] = useState(Acceleration);
     //const [corScore, setCorneringScore] = useState(Cornering);
 
+    const [genScore, setGeneralScore] = useState(50);
+    const [brkScore, setBrakingScore] = useState(50);
+    const [spdScore, setSpeedScore] = useState(50);
+    const [accScore, setAccelerationScore] = useState(50);
+    const [corScore, setCorneringScore] = useState(50);
+
     //once the values that are being used and what file they are coming from
     //this can be changed as the rest of the errors that are left
     //are related to this section above, i can fix this once they 
@@ -39,10 +45,10 @@ export default function ViewTripProgress(){
             info = <Text style={styles.text}>According to the score calculators, your doing amazing!.</Text>
         }
         return (
-            <view>
+            <View>
                 {title}
                 {info}
-            </view>
+            </View>
         );
     };
 
@@ -102,7 +108,10 @@ export default function ViewTripProgress(){
                 </View>
             </View>
             <Text style={styles.Title}>Bad Habits</Text>
-            <ScrollView style={styles.scrollContainer}>
+            <ScrollView 
+                style={styles.scrollContainer} 
+                contentContainerStyle={styles.scrollContent}
+            >
                 {brkScore < 70 && (
                     <InfoCard
                         typescore="braking"
@@ -161,16 +170,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    scrollContainer:{
+    scrollContainer: {
         flex: 1,
         height: 300,
+    },
+    scrollContent: {
         alignItems: 'center',
         justifyContent: 'center',
-
     },
     text: {
         fontSize: 15,
         flexWrap: 'wrap',
         maxWidth: '80%',
-    }
+    },
+    
 });
