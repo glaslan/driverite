@@ -33,8 +33,10 @@ interface Trip {
 export default function TripHistory() {
   const [tableTimeframe, setTableTimeframe] = useState("week");
   const [graphLabels, setGraphLabels] = useState<string[]>([]);
+  const [graphValues, setGraphValues] = useState<Array<number>>([0,0,0,0,0,0,0]);
   const [average, setAverage] = useState<number>(0);
   const [tripElements, setTripElements] = useState<Trip[]>([]);
+  
 
   function getGraphLabels() {
     if (tableTimeframe === "week") return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -44,7 +46,11 @@ export default function TripHistory() {
 
   useEffect(() => {
     setGraphLabels(getGraphLabels());
-  }, [tableTimeframe]);
+
+	if (tableTimeframe === "week") calculateAverageScoresByDay();
+	else if (tableTimeframe === "month") calculateAverageScoresByMonth();
+	else calculateAverageScoresByYear();
+  }, [tableTimeframe, tripElements]);
 
   async function fetchData() {
     // Test code starts
@@ -79,6 +85,76 @@ export default function TripHistory() {
 	return value < 10 ? `0${value}` : `${value}`;
   }
 
+  const calculateAverageScoresByDay = () => {
+	const dailyScores = [0, 0, 0, 0, 0, 0, 0];
+	const dailyCounts = [0, 0, 0, 0, 0, 0, 0];
+  
+	tripElements.forEach((trip) => {
+	  const tripDate = new Date(trip.tripStart);
+	  const dayOfWeek = tripDate.getDay();
+	  const score = trip.score;
+	  
+	  dailyScores[dayOfWeek] += score;
+	  dailyCounts[dayOfWeek] += 1;
+	});
+  
+	const tempGraphValues = dailyScores.map((score, index) => {
+	  return dailyCounts[index] > 0 ? score / dailyCounts[index] : 0;
+	});
+  
+	setGraphValues(tempGraphValues);
+  };
+
+  const calculateAverageScoresByMonth = () => {
+	const dayRanges = [0, 5, 10, 15, 20, 25];
+	const monthlyScores = new Array(5).fill(0);
+	const monthlyCounts = new Array(5).fill(0);
+  
+	tripElements.forEach((trip) => {
+	  const tripDate = new Date(trip.tripStart);
+	  const dayOfMonth = tripDate.getDate();
+	  const score = trip.score;
+  
+	  let periodIndex = 0;
+	  for (let i = 0; i < dayRanges.length - 1; i++) {
+		if (dayOfMonth >= dayRanges[i] + 1 && dayOfMonth <= dayRanges[i + 1]) {
+		  periodIndex = i;
+		  break;
+		}
+	  }
+  
+	  monthlyScores[periodIndex] += score;
+	  monthlyCounts[periodIndex] += 1;
+	});
+  
+	const tempGraphValues = monthlyScores.map((score, index) => {
+	  return monthlyCounts[index] > 0 ? score / monthlyCounts[index] : 0;
+	});
+  
+	setGraphValues(tempGraphValues);
+  };
+
+  const calculateAverageScoresByYear = () => {
+	const yearlyScores = new Array(12).fill(0);
+	const yearlyCounts = new Array(12).fill(0);
+  
+	tripElements.forEach((trip) => {
+	  const tripDate = new Date(trip.tripStart);
+	  const month = tripDate.getMonth();
+	  const score = trip.score;
+  
+	  yearlyScores[month] += score;
+	  yearlyCounts[month] += 1;
+	});
+  
+	const tempGraphValues = yearlyScores.map((score, index) => {
+	  return yearlyCounts[index] > 0 ? score / yearlyCounts[index] : 0;
+	});
+  
+	setGraphValues(tempGraphValues);
+  };
+  
+
   return (
     <View style={styles.background}>
       <Text style={{ color: "black", display: "flex", alignSelf: 'center', fontSize: 30, marginTop: "20%" }}>History</Text>
@@ -101,14 +177,7 @@ export default function TripHistory() {
             labels: graphLabels,
             datasets: [
               {
-                data: [
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100
-                ]
+                data: graphValues
               }
             ]
           }}
