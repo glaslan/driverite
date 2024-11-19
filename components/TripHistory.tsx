@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {Text} from 'react-native-paper';
 import {LoadObjectFromStorage, SaveObjectToStorage} from "@/components/Storage";
@@ -13,19 +13,26 @@ const DummyTripResults = {
 	cornering: 0
 }
 
-export async function TripHistory() {
-	// Test code starts
-	await AsyncStorage.clear();
+export default function TripHistory() {
+	const [average, setAverage] = useState();
+	const [tripElements, setTripElements] = useState();
 
-	for (let i = 0; i < 10; i++) {
-		const tripData = Object.assign({}, DummyTripResults);
-		tripData.score = Math.round(Math.random() * 100);
-		await SaveObjectToStorage(`Trip ${i}`, tripData);
+	async function fetchData() {
+		// Test code starts
+		await AsyncStorage.clear();
+
+		for (let i = 0; i < 10; i++) {
+			const tripData = Object.assign({}, DummyTripResults);
+			tripData.score = Math.round(Math.random() * 100);
+			await SaveObjectToStorage(`Trip ${i}`, tripData);
+		}
+		// Test code ends
+
+		// I used a tuple to avoid having multiple for loops
+		const [tempAverage, tempTripElements] = await GetTripHistory();
+		setAverage(tempAverage);
+		setTripElements(tempTripElements);
 	}
-	// Test code ends
-
-	// I used a tuple to avoid having multiple for loops
-	const [average, tripElements] = await GetTripHistory();
 
 	return (
 		<View style={styles.background}>

@@ -4,7 +4,7 @@ import {TripHistory} from "@/components/TripHistory";
 export default async function TripHistoryPage() {
 	return (
 		<View>
-			{await TripHistory()}
+			<TripHistory />
 		</View>
 	);
 }
