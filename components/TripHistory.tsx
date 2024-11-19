@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {Text} from 'react-native-paper';
 import {LoadObjectFromStorage, SaveObjectToStorage} from "@/components/Storage";
@@ -14,12 +14,20 @@ const DummyTripResults = {
 }
 
 export default function TripHistory() {
-	const [average, setAverage] = useState();
-	const [tripElements, setTripElements] = useState();
+	const [average, setAverage] = useState<number>(0);
+	const [tripElements, setTripElements] = useState<object>({});
+
 
 	async function fetchData() {
+		console.log("1");
+
+		const keysBeforeClear = await AsyncStorage.getAllKeys();
+		console.log("Keys before clear:", keysBeforeClear);
+
 		// Test code starts
 		await AsyncStorage.clear();
+
+		console.log("2");
 
 		for (let i = 0; i < 10; i++) {
 			const tripData = Object.assign({}, DummyTripResults);
@@ -30,18 +38,28 @@ export default function TripHistory() {
 
 		// I used a tuple to avoid having multiple for loops
 		const [tempAverage, tempTripElements] = await GetTripHistory();
-		setAverage(tempAverage);
-		setTripElements(tempTripElements);
+
+		setAverage(Number(tempAverage));
+		setTripElements(Object(tempTripElements));
+
+		console.log(tempAverage);
+		console.log("tripElements", tripElements);
 	}
+
+	useEffect(() => {
+		console.log("useEffect");
+		fetchData();
+	}, []);
 
 	return (
 		<View style={styles.background}>
 			<Text style={styles.header}>Trip History</Text>
 			<View style={styles.averageScoreView}>
-				{average}
+				<Text>{average}</Text>
 			</View>
 			<ScrollView style={styles.scrollView}>
-				{tripElements}
+				<Text>{average}</Text>
+				{/* {tripElements} */}
 			</ScrollView>
 		</View>
 	);
@@ -58,17 +76,10 @@ async function GetTripHistory() {
 
 		sum += trip.score;
 
-		tripElements[i] =
-			<View style={styles.listElement}>
-				<Text style={styles.listElementText}>Score: {trip.score}</Text>
-				<Text>|</Text>
-				<Text style={styles.listElementText}>Speed: {trip.speed}</Text>
-				<Text>|</Text>
-				<Text style={styles.listElementText}>Accel: {trip.acceleration}</Text>
-			</View>;
+		tripElements[i] = trip;
 	}
 
-	const average = <Text>Average Score: {Math.round(sum / keys.length)}</Text>;
+	const average = Math.round(sum / keys.length);
 	return [average, tripElements];
 }
 

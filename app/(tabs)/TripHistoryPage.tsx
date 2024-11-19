@@ -1,10 +1,8 @@
 import { View } from 'react-native';
-import {TripHistory} from "@/components/TripHistory";
+import TripHistory from "@/components/TripHistory";
 
-export default async function TripHistoryPage() {
+export default function TripHistoryPage() {
 	return (
-		<View>
-			<TripHistory />
-		</View>
+		<TripHistory />
 	);
 }
