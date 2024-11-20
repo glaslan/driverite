@@ -7,24 +7,14 @@ import { SegmentedButtons } from 'react-native-paper';
 import { List } from 'react-native-paper';
 import { LineChart } from "react-native-chart-kit";
 import { Dimensions } from 'react-native';
-
-// Test code
-const DummyTripResults = {
-  score: 0,
-  acceleration: 0,
-  speed: 0,
-  breaking: 0,
-  cornering: 0,
-  tripStart: new Date(),
-  tripEnd: new Date(),
-};
+import { useTripStorage } from '@/hooks/useTripStorage';
 
 // Define Trip interface
 interface Trip {
   score: number;
   acceleration: number;
   speed: number;
-  breaking: number;
+  braking: number;
   cornering: number;
   tripStart: Date;
   tripEnd: Date;
@@ -35,7 +25,9 @@ export default function TripHistory() {
   const [graphLabels, setGraphLabels] = useState<string[]>([]);
   const [graphValues, setGraphValues] = useState<Array<number>>([0,0,0,0,0,0,0]);
   const [average, setAverage] = useState<number>(0);
-  const [tripElements, setTripElements] = useState<Trip[]>([]);
+  const [trips, setTrips] = useState<Trip[]>([]);
+
+  const { getTripHistory } = useTripStorage();
   
 
   function getGraphLabels() {
@@ -50,26 +42,14 @@ export default function TripHistory() {
 	if (tableTimeframe === "week") calculateAverageScoresByDay();
 	else if (tableTimeframe === "month") calculateAverageScoresByMonth();
 	else calculateAverageScoresByYear();
-  }, [tableTimeframe, tripElements]);
-
-  async function fetchData() {
-    // Test code starts
-    await AsyncStorage.clear();
-
-    for (let i = 0; i < 10; i++) {
-      const tripData = Object.assign({}, DummyTripResults);
-      tripData.score = Math.round(Math.random() * 100);
-      await SaveObjectToStorage(`Trip ${i}`, tripData);
-    }
-    // Test code ends
-
-    const [tempAverage, tempTripElements] = await GetTripHistory();
-
-    setAverage(Number(tempAverage));
-    setTripElements(tempTripElements as Trip[]);
-  }
+  }, [tableTimeframe, trips]);
 
   useEffect(() => {
+    async function fetchData() {
+      const fetchedTrips = await getTripHistory();
+      setTrips(fetchedTrips);
+      console.log("trips:", fetchedTrips);
+    }
     fetchData();
   }, []);
 
@@ -89,7 +69,7 @@ export default function TripHistory() {
 	const dailyScores = [0, 0, 0, 0, 0, 0, 0];
 	const dailyCounts = [0, 0, 0, 0, 0, 0, 0];
   
-	tripElements.forEach((trip) => {
+	trips.forEach((trip) => {
 	  const tripDate = new Date(trip.tripStart);
 	  const dayOfWeek = tripDate.getDay();
 	  const score = trip.score;
@@ -110,7 +90,7 @@ export default function TripHistory() {
 	const monthlyScores = new Array(5).fill(0);
 	const monthlyCounts = new Array(5).fill(0);
   
-	tripElements.forEach((trip) => {
+	trips.forEach((trip) => {
 	  const tripDate = new Date(trip.tripStart);
 	  const dayOfMonth = tripDate.getDate();
 	  const score = trip.score;
@@ -138,7 +118,7 @@ export default function TripHistory() {
 	const yearlyScores = new Array(12).fill(0);
 	const yearlyCounts = new Array(12).fill(0);
   
-	tripElements.forEach((trip) => {
+	trips.forEach((trip) => {
 	  const tripDate = new Date(trip.tripStart);
 	  const month = tripDate.getMonth();
 	  const score = trip.score;
@@ -207,40 +187,22 @@ export default function TripHistory() {
         />
       </View>
       <ScrollView style={styles.scrollView}>
-        {tripElements.map((trip, index) => (
-          <List.Accordion key={index} title={`${new Date(trip.tripStart).getDay()}/${new Date(trip.tripStart).getMonth()}/${new Date(trip.tripStart).getFullYear()}`}
+        {trips.map((trip, index) => (
+          <List.Accordion key={index} title={`${new Date(trip.tripStart).getDay()+1}/${new Date(trip.tripStart).getMonth()+1}/${new Date(trip.tripStart).getFullYear()}`}
 		  description={`${trip.score}/100`} left={props => <List.Icon {...props} icon="circle-slice-8" color={getIconColor(trip.score)} />}>
             <List.Item
 				title={`Your trip was ${((new Date(trip.tripEnd).getTime() - new Date(trip.tripStart).getTime()) / (1000 * 60)).toFixed(0)} minutes long`}
 				description={`Your trip started at ${formatTime(new Date(trip.tripStart).getHours())}:${formatTime(new Date(trip.tripStart).getMinutes())}\nThe trip ended at ${formatTime(new Date(trip.tripEnd).getHours())}:${formatTime(new Date(trip.tripEnd).getMinutes())}`}
 			/>
             <List.Item title={`Your acceleration has a score of ${trip.acceleration}`} />
-            <List.Item title={`Your speed has a score of: ${trip.speed}`} />
-            <List.Item title={`Your braking has a score of: ${trip.breaking}`} />
-            <List.Item title={`Your cornering has a score of: ${trip.cornering}`} />
+            <List.Item title={`Your speed has a score of ${trip.speed}`} />
+            <List.Item title={`Your braking has a score of ${trip.braking}`} />
+            <List.Item title={`Your cornering has a score of ${trip.cornering}`} />
           </List.Accordion>
         ))}
       </ScrollView>
     </View>
   );
-}
-
-async function GetTripHistory() {
-  const keys = await AsyncStorage.getAllKeys();
-
-  let sum = 0;
-  let tripElements: Trip[] = [];
-
-  for (let i = 0; i < keys.length; i++) {
-    const trip = await LoadObjectFromStorage(keys[i]);
-
-    sum += trip.score;
-
-    tripElements[i] = trip;
-  }
-
-  const average = Math.round(sum / keys.length);
-  return [average, tripElements];
 }
 
 const styles = StyleSheet.create({
