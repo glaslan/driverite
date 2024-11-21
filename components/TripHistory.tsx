@@ -193,10 +193,10 @@ export default function TripHistory() {
 				title={`Your trip was ${((new Date(trip.tripEnd).getTime() - new Date(trip.tripStart).getTime()) / (1000 * 60)).toFixed(0)} minutes long`}
 				description={`Your trip started at ${formatTime(new Date(trip.tripStart).getHours())}:${formatTime(new Date(trip.tripStart).getMinutes())}\nThe trip ended at ${formatTime(new Date(trip.tripEnd).getHours())}:${formatTime(new Date(trip.tripEnd).getMinutes())}`}
 			/>
-            <List.Item title={`Your acceleration has a score of ${trip.acceleration}`} />
-            <List.Item title={`Your speed has a score of ${trip.speed}`} />
-            <List.Item title={`Your braking has a score of ${trip.braking}`} />
-            <List.Item title={`Your cornering has a score of ${trip.cornering}`} />
+            <List.Item title={`Your trip acceleration score is ${trip.acceleration}%`} />
+            <List.Item title={`Your trip speed score is ${trip.speed}%`} />
+            <List.Item title={`Your trip braking score is ${trip.braking}%`} />
+            <List.Item title={`Your trip cornering score is ${trip.cornering}%`} />
           </List.Accordion>
         ))}
       </ScrollView>
