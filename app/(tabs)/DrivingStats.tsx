@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Card, Surface, Text } from 'react-native-paper';
+import { Button, Card, IconButton, Surface, Text } from 'react-native-paper';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import DrivingScore from '@/components/DrivingScore';
@@ -44,7 +44,30 @@ export default function DrivingStats() {
 
   return (
     <View style={styles.background}>
-      <Text style={{color: "black", display: "flex", alignSelf: 'center', fontSize: 30, marginTop: "20%"}}>Driving Score</Text>
+      <View style={{ marginTop: "20%", display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+        <IconButton 
+          icon="history" 
+          iconColor="white" 
+          size={30} 
+          onPress={() => {}} 
+        />
+        <Text 
+          style={{ 
+            color: "black", 
+            fontSize: 30, 
+            textAlign: "center", 
+            flex: 1 
+          }}
+        >
+          Driving Score
+        </Text>
+        <IconButton 
+          icon="history" 
+          iconColor="black" 
+          size={30} 
+          onPress={() => {}} 
+        />
+      </View>
       <View style={{display: 'flex', flexDirection: "row", width: "100%", height: "13%", padding: 10, gap: 5, justifyContent: 'space-between', marginTop: "5%"}}>
         <QuickTip messageOne="You've gone on" value={2} messageTwo="trips." color="#c7e0ff" />
         <QuickTip messageOne="You've spent" value={1284} messageTwo="minutes driving." color="#fff8c2" />
@@ -103,7 +126,6 @@ export default function DrivingStats() {
 }
 
 function DrivingScores({ scores }: DrivingScoresProps) {
-  console.log("drivingScores rerender")
   return (
     <Surface style={styles.surface}>
       {Object.keys(scores).map((key) => (

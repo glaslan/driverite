@@ -48,7 +48,6 @@ export default function TripHistory() {
     async function fetchData() {
       const fetchedTrips = await getTripHistory();
       setTrips(fetchedTrips);
-      console.log("trips:", fetchedTrips);
     }
     fetchData();
   }, []);
