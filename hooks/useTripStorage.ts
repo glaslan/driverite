@@ -31,6 +31,10 @@ export const useTripStorage = () => {
         await AsyncStorage.clear();
     }
 
+    async function saveTrip(trip: Trip) {
+        await SaveObjectToStorage(`${trip.tripStart}`, trip);
+    }
+
     async function generateDummyData(amount = 10) {
         await emptyDatabase();
 
@@ -51,7 +55,7 @@ export const useTripStorage = () => {
             const tripLength = Math.floor(Math.random() * (120 - 10 + 1) + 10) * 60 * 1000;
             tripData.tripEnd = new Date(tripData.tripStart.getTime() + tripLength);
 
-            await SaveObjectToStorage(`Trip ${i}`, tripData);
+            await saveTrip(tripData);
           }
     }
 
@@ -95,5 +99,5 @@ export const useTripStorage = () => {
         return {overallAverage, overallAcceleration, overallSpeed, overallBraking, overallCornering};
       }
 
-      return {emptyDatabase, generateDummyData, getTripAverage, getOverallAverage, getTripHistory};
+      return {emptyDatabase, generateDummyData, saveTrip, getTripAverage, getOverallAverage, getTripHistory};
 }
