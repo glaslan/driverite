@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Card, IconButton, Surface, Text } from 'react-native-paper';
-import CircularProgress from 'react-native-circular-progress-indicator';
+import { IconButton, Surface, Text } from 'react-native-paper';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import DrivingScore from '@/components/DrivingScore';
 import { useTripStorage } from '@/hooks/useTripStorage';
+import TripHistory from "@/components/TripHistory";
 
 interface DrivingScoresProps {
   scores: {
@@ -15,7 +15,22 @@ interface DrivingScoresProps {
   };
 }
 
-export default function DrivingStats() {
+export default function DrivingStatsPage() {
+  const [statsPage, setStatsPage] = useState(true);
+  const [tableTimeframe, setTableTimeframe] = useState("week");
+  
+  if (statsPage) {
+    return <DrivingStats onHistoryClicked={() => setStatsPage(false)} />
+  } else {
+    return <TripHistory
+      onBackButtonClicked={() => setStatsPage(true)}
+      timeframe={tableTimeframe}
+      onTimeframeChange={(timeframe) => setTableTimeframe(timeframe)}
+    />;
+  }
+}
+
+function DrivingStats({ onHistoryClicked }: { onHistoryClicked: () => void }) {
   const {getOverallAverage} = useTripStorage();
 
   const [overallScore, setOverallScore] = useState<number>(0);
@@ -65,7 +80,7 @@ export default function DrivingStats() {
           icon="history" 
           iconColor="black" 
           size={30} 
-          onPress={() => {}} 
+          onPress={onHistoryClicked}
         />
       </View>
       <View style={{display: 'flex', flexDirection: "row", width: "100%", height: "13%", padding: 10, gap: 5, justifyContent: 'space-between', marginTop: "5%"}}>
