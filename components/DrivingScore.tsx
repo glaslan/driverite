@@ -3,8 +3,6 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Icon } from 'react-native-paper';
 
 export default function DrivingScore({ valueName = "Name not set", value = 1 }) {
-  const [score, setScore] = useState(value);
-
   function getMessage() {
     if (value >= 95) return "Excellent";
     else if (value >= 80) return "Good";
@@ -39,7 +37,7 @@ export default function DrivingScore({ valueName = "Name not set", value = 1 }) 
       <Text style={[styles.message, { color: getMessageColor() }]}>
         <Text style={styles.messageText}>{getMessage()}</Text> {valueName}!
       </Text>
-      <Text style={styles.score}>{score}/100</Text>
+      <Text style={styles.score}>{value}/100</Text>
     </View>
   );
 }
