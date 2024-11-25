@@ -15,11 +15,15 @@ import MapView, { Region } from 'react-native-maps';
 import * as Location from 'expo-location';
 import GPSDrawer from './GPSDrawer';
 
-export default function MapAccelerometer(): JSX.Element {
+interface ChildProps {
+    setSpeed: React.Dispatch<React.SetStateAction<number>>;
+    speed: number;
+  }
+
+const MapAccelerometer: React.FC<ChildProps> = ({ setSpeed, speed }) => {
     // Location state
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [locationSubscription, setLocationSubscription] = useState<Location.LocationSubscription | null>(null);
-    const [speed, setSpeed] = useState<number>(0);
     const [region, setRegion] = useState<Region>({
         latitude: 37.78825,
         longitude: -122.4324,
@@ -72,7 +76,7 @@ export default function MapAccelerometer(): JSX.Element {
                         currentSpeed = 0; // Set to 0 if speed is negative or null
                     }
 
-                    setSpeed(currentSpeed);
+                    setSpeed(Math.round(currentSpeed));
 
                     // Collect speed samples if tracking
                     if (isTrackingRef.current) {
@@ -292,3 +296,5 @@ const styles = StyleSheet.create<Styles>({
         color: '#000',
     },
 });
+
+export default MapAccelerometer;

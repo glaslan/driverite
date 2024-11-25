@@ -1,11 +1,15 @@
 import React, { useCallback, useRef, useMemo, useState, useEffect } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetScrollView, BottomSheetBackgroundProps } from "@gorhom/bottom-sheet";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { Button, Surface } from "react-native-paper";
+import MapAccelerometer from "./MapAccelerometer";
 
-const GPSDrawer = ({ speed = 50, speedLimit = 60 }) => {
+const GPSDrawer = () => {
+  const [speed, setSpeed] = useState(0);
+  const [speedLimit, setSpeedLimit] = useState(0);
+
   function getSpeedColor() {
     if (speed >= speedLimit - 5 && speed <= speedLimit + 5) return "green";
     else if (speed >= speedLimit - 10 && speed <= speedLimit + 10) return "orange";
@@ -45,12 +49,23 @@ const GPSDrawer = ({ speed = 50, speedLimit = 60 }) => {
 
   return (
     <GestureHandlerRootView style={styles.container}>
+      <View style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: "110%"
+      }}>
+        <MapAccelerometer speed={speed} setSpeed={setSpeed} />
+      </View>
       <BottomSheet
         ref={sheetRef}
-        index={1}
+        index={0}
         snapPoints={snapPoints}
         enableDynamicSizing={false}
         onChange={handleSheetChange}
+        enableOverDrag={false}
       >
         <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
             <View style={{display: "flex", flexDirection: "column"}}>

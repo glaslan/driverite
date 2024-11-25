@@ -5,6 +5,7 @@ import MapAccelerometer from '@/components/MapAccelerometer';
 import { useTripStorage } from '@/hooks/useTripStorage';
 import GPSDrawer from '@/components/GPSDrawer';
 import StartPage from '@/components/StartPage';
+import TripPage from '@/components/TripPage';
 
 export default function HomeScreen() {
   const { generateDummyData } = useTripStorage();
@@ -30,14 +31,7 @@ export default function HomeScreen() {
       {!tripStarted ? (
         <StartPage setTripStarted={setTripStarted} />
       ) : (
-        <>
-          <View style={styles.gpsDrawer}>
-            <GPSDrawer />
-          </View>
-          <View style={styles.mapAccelerometer}>
-            <MapAccelerometer />
-          </View>
-        </>
+        <TripPage />
       )}
     </PaperProvider>
   );
