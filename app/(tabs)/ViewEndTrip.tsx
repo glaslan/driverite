@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import {ScrollView ,Text, View, StyleSheet} from 'react-native';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import Drivingstats from '@/app/(tabs)/DrivingStats';
+import { useTripStorage } from '@/hooks/useTripStorage'
 
 export default function ViewTripProgress(){
-    //const [genScore, setGeneralScore] = useState(average);
-    //const [brkScore, setBrakingScore] = useState(Braking);
-    //const [spdScore, setSpeedScore] = useState(Speed);
-    //const [accScore, setAccelerationScore] = useState(Acceleration);
-    //const [corScore, setCorneringScore] = useState(Cornering);
+    //const [genScore, setGeneralScore] = useState(getTripAverage());
+    //const [brkScore, setBrakingScore] = useState(braking);
+    //const [spdScore, setSpeedScore] = useState(speed);
+    //const [accScore, setAccelerationScore] = useState(acceleration);
+    //const [corScore, setCorneringScore] = useState(cornering);
 
     const [genScore, setGeneralScore] = useState(50);
-    const [brkScore, setBrakingScore] = useState(50);
+    const [brkScore, setBrakingScore] = useState(100);
     const [spdScore, setSpeedScore] = useState(50);
     const [accScore, setAccelerationScore] = useState(50);
     const [corScore, setCorneringScore] = useState(50);
@@ -79,38 +80,46 @@ export default function ViewTripProgress(){
             <View style={styles.progressContainer}>
                 <CircleDisplay
                     score={genScore}
-                    radivalue={100}
+                    radivalue={80}
                 />
                 <Text style={styles.text}>General rating</Text>
                 <View style={styles.progressrow}>
+                  <View style={styles.circleContainer}>
                     <CircleDisplay
                         score={accScore}
-                        radivalue={40}
+                        radivalue={45}
                     />
-                    <Text style={styles.text}>Acceleration rating</Text>
+                    <Text style={styles.text}>Acceleration</Text>
+                  </View>
+                  <View style={styles.circleContainer}>
                     <CircleDisplay
                         score={spdScore}
-                        radivalue={40}
+                        radivalue={45}
                     />
-                    <Text style={styles.text}>Speed rating</Text>
+                    <Text style={styles.text}>Speed</Text>
+                  </View>
                 </View>
                 <View style={styles.progressrow}>
+                  <View style={styles.circleContainer}>
                     <CircleDisplay
                         score={brkScore}
-                        radivalue={40}
+                        radivalue={45}
                     />
-                    <Text style={styles.text}>Braking rating</Text>
+                    <Text style={styles.text}>Braking</Text>
+                  </View>
+                  <View style={styles.circleContainer}>
                     <CircleDisplay
                         score={corScore}
-                        radivalue={40}
+                        radivalue={45}
                     />
-                    <Text style={styles.text}>Cornering rating</Text>
+                    <Text style={styles.text}>Cornering</Text>
+                  </View>
                 </View>
             </View>
             <Text style={styles.Title}>Bad Habits</Text>
             <ScrollView 
                 style={styles.scrollContainer} 
-                contentContainerStyle={styles.scrollContent}
+                contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}
             >
                 {brkScore < 70 && (
                     <InfoCard
@@ -149,6 +158,8 @@ const styles = StyleSheet.create({
       backgroundColor: "white"
     },
     Title:{
+      marginTop: 10,
+      marginBottom: 5,
         fontSize: 20,
         fontWeight: 'bold',
     },
@@ -160,19 +171,29 @@ const styles = StyleSheet.create({
     },
     progressrow: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         alignItems: 'center',
         flex: 1,
-        paddingTop: 20,
+        display: 'flex',
+        paddingTop: 5,
+        width: '100%'
     },
-    progressContainer: {
-        marginBottom: 20,
+    circleContainer:{
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        width: 175,
+    },
+    progressContainer: {
+        marginBottom: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 400,
     },
     scrollContainer: {
         flex: 1,
-        height: 300,
+        height: 150,
+        width: 350,
     },
     scrollContent: {
         alignItems: 'center',
@@ -181,7 +202,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 15,
         flexWrap: 'wrap',
-        maxWidth: '80%',
+        maxWidth: '95%',
     },
     
 });
