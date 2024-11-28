@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Text } from 'react-native-paper';
-import { LoadObjectFromStorage, SaveObjectToStorage } from "@/components/Storage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { IconButton, Text } from 'react-native-paper';
 import { SegmentedButtons } from 'react-native-paper';
 import { List } from 'react-native-paper';
 import { LineChart } from "react-native-chart-kit";
@@ -20,15 +18,24 @@ interface Trip {
   tripEnd: Date;
 }
 
-export default function TripHistory() {
-  const [tableTimeframe, setTableTimeframe] = useState("week");
+export default function TripHistory(
+  {
+  onBackButtonClicked,
+  timeframe,
+  onTimeframeChange,
+  }: {
+    onBackButtonClicked: () => void,
+    timeframe: string,
+    onTimeframeChange: (timeframe: string) => void
+  }) {
+  
+  const tableTimeframe = timeframe;
   const [graphLabels, setGraphLabels] = useState<string[]>([]);
   const [graphValues, setGraphValues] = useState<Array<number>>([0,0,0,0,0,0,0]);
   const [average, setAverage] = useState<number>(0);
   const [trips, setTrips] = useState<Trip[]>([]);
 
   const { getTripHistory } = useTripStorage();
-  
 
   function getGraphLabels() {
     if (tableTimeframe === "week") return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -96,10 +103,10 @@ export default function TripHistory() {
   
 	  let periodIndex = 0;
 	  for (let i = 0; i < dayRanges.length - 1; i++) {
-		if (dayOfMonth >= dayRanges[i] + 1 && dayOfMonth <= dayRanges[i + 1]) {
-		  periodIndex = i;
-		  break;
-		}
+      if (dayOfMonth >= dayRanges[i] + 1 && dayOfMonth <= dayRanges[i + 1]) {
+        periodIndex = i;
+        break;
+      }
 	  }
   
 	  monthlyScores[periodIndex] += score;
@@ -136,10 +143,34 @@ export default function TripHistory() {
 
   return (
     <View style={styles.background}>
-      <Text style={{ color: "black", display: "flex", alignSelf: 'center', fontSize: 30, marginTop: "20%" }}>History</Text>
+      <View style={{ marginTop: "20%", display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+        <IconButton 
+          icon="arrow-left"
+          iconColor="black" 
+          size={30} 
+          onPress={onBackButtonClicked} 
+        />
+        <Text 
+          style={{ 
+            color: "black", 
+            fontSize: 30, 
+            textAlign: "center", 
+            flex: 1 
+          }}
+        >
+          History
+        </Text>
+        <IconButton 
+          icon="arrow-right" 
+          iconColor="white" 
+          size={30} 
+          onPress={() => {}}
+        />
+      </View>
+      
       <SegmentedButtons
         value={tableTimeframe}
-        onValueChange={(e) => { setTableTimeframe(e) }}
+        onValueChange={(e) => { onTimeframeChange(e) }}
         buttons={[
           {
             value: 'week',
