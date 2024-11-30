@@ -75,26 +75,26 @@ export default function DrivingStats() {
       </View>
 
       <View style={styles.progressContainer}>
-    <AnimatedCircularProgress
-          size={250}
-          width={50}
-          fill={overallScore}
-          tintColor="#00e0ff"
-          backgroundColor="#3d5875"
-          rotation={360}>
-          {
-            (fill) => (
-              <View style={{alignItems: "center"}}>
-                <Text style={{ fontSize: 60, fontWeight: 800 }}>
-                  { overallScore }
-                </Text>
-                <Text>
-                  / 100
-                </Text>
-              </View>
-            )
-          }
-        </AnimatedCircularProgress>
+        <AnimatedCircularProgress
+              size={250}
+              width={50}
+              fill={overallScore}
+              tintColor="#00e0ff"
+              backgroundColor="#3d5875"
+              rotation={360}>
+              {
+                (fill) => (
+                  <View style={{alignItems: "center"}}>
+                    <Text style={{ fontSize: 60, fontWeight: 800 }}>
+                      { overallScore }
+                    </Text>
+                    <Text>
+                      / 100
+                    </Text>
+                  </View>
+                )
+              }
+            </AnimatedCircularProgress>
         {/* <CircularProgress
           value={overallScore}
           radius={135}

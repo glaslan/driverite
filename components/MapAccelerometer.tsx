@@ -13,12 +13,18 @@ import {
 } from 'react-native';
 import MapView, { Region } from 'react-native-maps';
 import * as Location from 'expo-location';
+import GPSDrawer from './GPSDrawer';
 
-export default function MapAccelerometer(): JSX.Element {
+interface ChildProps {
+    setSpeed: React.Dispatch<React.SetStateAction<number>>;
+    speed: number;
+    setTripEnded: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+
+const MapAccelerometer: React.FC<ChildProps> = ({ setSpeed, speed, setTripEnded }) => {
     // Location state
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [locationSubscription, setLocationSubscription] = useState<Location.LocationSubscription | null>(null);
-    const [speed, setSpeed] = useState<number>(0);
     const [region, setRegion] = useState<Region>({
         latitude: 37.78825,
         longitude: -122.4324,
@@ -28,7 +34,7 @@ export default function MapAccelerometer(): JSX.Element {
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     // Trip tracking state
-    const [isTracking, setIsTracking] = useState<boolean>(false);
+    const [isTracking, setIsTracking] = useState<boolean>(true);
     const isTrackingRef = useRef<boolean>(isTracking);
     const [totalSpeed, setTotalSpeed] = useState<number>(0);
     const [sampleCount, setSampleCount] = useState<number>(0);
@@ -40,6 +46,8 @@ export default function MapAccelerometer(): JSX.Element {
     // Update isTrackingRef whenever isTracking changes
     useEffect(() => {
         isTrackingRef.current = isTracking;
+
+        if (isTracking === false) setTripEnded(true);
     }, [isTracking]);
 
     // Location functions
@@ -71,7 +79,7 @@ export default function MapAccelerometer(): JSX.Element {
                         currentSpeed = 0; // Set to 0 if speed is negative or null
                     }
 
-                    setSpeed(currentSpeed);
+                    setSpeed(Math.round(currentSpeed));
 
                     // Collect speed samples if tracking
                     if (isTrackingRef.current) {
@@ -184,65 +192,21 @@ export default function MapAccelerometer(): JSX.Element {
     const totalTime = isTracking && startTime ? elapsedTime + (Date.now() - startTime) : elapsedTime;
 
     return (
-        <View style={styles.container}>
+        <>
             <MapView
                 style={styles.map}
                 region={region}
                 showsUserLocation={true}
                 followsUserLocation={true}
             />
-
-            {/* Speed Box */}
-            <View style={[styles.speedContainer, { backgroundColor: getSpeedBoxColor() }]}>
-                <Text style={styles.speedText}>{speed.toFixed(0)} km/h</Text>
-            </View>
-
-            {/* Trip Info (Average Speed and Total Time) */}
-            <View style={styles.tripInfoContainer}>
-                <Text style={styles.tripInfoText}>Average Speed: {averageSpeed.toFixed(0)} km/h</Text>
-                <Text style={styles.tripInfoText}>Total Trip Time: {formatTime(totalTime)}</Text>
-            </View>
-
-            {/* Start/Pause and End Trip Buttons */}
-            <View style={styles.startPauseContainer}>
-                <TouchableOpacity
-                    onPress={handleStartPause}
-                    style={styles.button}
-                >
-                    <Text style={styles.buttonText}>{isTracking ? 'Pause' : 'Start'}</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    onPress={handleEndTrip}
-                    style={styles.button}
-                >
-                    <Text style={styles.buttonText}>End Trip</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* Existing Info Box (Coordinates) */}
-            <View style={styles.infoContainer}>
-                {location ? (
-                    <>
-                        <Text style={styles.infoText}>
-                            Latitude: {location.coords.latitude.toFixed(6)}
-                        </Text>
-                        <Text style={styles.infoText}>
-                            Longitude: {location.coords.longitude.toFixed(6)}
-                        </Text>
-                    </>
-                ) : (
-                    <Text style={styles.infoText}>Fetching location...</Text>
-                )}
-            </View>
-        </View>
+        </>
     );
 }
-
 
 interface Styles {
     container: ViewStyle;
     map: ViewStyle;
+    gpsDrawerContainer: ViewStyle;
     speedContainer: ViewStyle;
     speedText: TextStyle;
     infoContainer: ViewStyle;
@@ -260,6 +224,13 @@ const styles = StyleSheet.create<Styles>({
     },
     map: {
         flex: 1,
+    },
+    gpsDrawerContainer: {
+        position: 'absolute',
+        bottom: 0,  // Position at the bottom of the screen
+        left: 0,
+        right: 0,
+        zIndex: 10, // Ensure the GPSDrawer is above the map
     },
     speedContainer: {
         position: 'absolute',
@@ -328,3 +299,5 @@ const styles = StyleSheet.create<Styles>({
         color: '#000',
     },
 });
+
+export default MapAccelerometer;
