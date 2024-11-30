@@ -9,6 +9,7 @@ import MapAccelerometer from "./MapAccelerometer";
 const GPSDrawer = () => {
   const [speed, setSpeed] = useState(0);
   const [speedLimit, setSpeedLimit] = useState(0);
+  const [tripEnded, setTripEnded] = useState(false);
 
   function getSpeedColor() {
     if (speed >= speedLimit - 5 && speed <= speedLimit + 5) return "green";
@@ -47,6 +48,10 @@ const GPSDrawer = () => {
     );
 }
 
+  function handleEndTrip() {
+    
+  }
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={{
@@ -57,7 +62,7 @@ const GPSDrawer = () => {
         bottom: 0,
         height: "110%"
       }}>
-        <MapAccelerometer speed={speed} setSpeed={setSpeed} />
+        <MapAccelerometer speed={speed} setSpeed={setSpeed} setTripEnded={setTripEnded} />
       </View>
       <BottomSheet
         ref={sheetRef}
@@ -98,9 +103,17 @@ const GPSDrawer = () => {
                 </View>
                 </View>
 
-                    <View style={{marginTop: 50, display: "flex", padding: 10, gap: 15}}>
-                      <Text style={{paddingLeft: 5, paddingRight: 5}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit</Text>
-                      <Text style={{paddingLeft: 5, paddingRight: 5}}>"Sed ut perspiciatis unde omnis iste natus error</Text>
+                    <View style={{marginTop: 50, marginLeft: 25, marginRight: 25, display: "flex", padding: 10, gap: 15, justifyContent: "center", alignItems: "center"}}>
+                      <View style={{ paddingLeft: 5, paddingRight: 5, display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: '100%' }}>
+                      <Text><Text style={{fontWeight: "800"}}>{"54%"}</Text> acceleration</Text>
+                      <Text style={{marginLeft: "auto"}}><Text style={{fontWeight: "800"}}>{"54%"}</Text> speed</Text>
+                    </View>
+                    <View style={{ paddingLeft: 5, paddingRight: 5, display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: '100%' }}>
+                      <Text><Text style={{fontWeight: "800"}}>{"54%"}</Text> braking</Text>
+                      <Text style={{marginLeft: "auto"}}><Text style={{fontWeight: "800"}}>{"54%"}</Text> cornering</Text>
+                    </View>
+
+
 
                       <View style={{display: "flex", flexDirection: "row", justifyContent: "center", gap: 15, marginTop: 15}}>
                        <Surface style={{width: "45%", height: 100, padding: 20, borderRadius: 15, backgroundColor: "white"}}>

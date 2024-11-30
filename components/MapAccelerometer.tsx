@@ -18,9 +18,10 @@ import GPSDrawer from './GPSDrawer';
 interface ChildProps {
     setSpeed: React.Dispatch<React.SetStateAction<number>>;
     speed: number;
+    setTripEnded: React.Dispatch<React.SetStateAction<boolean>>;
   }
 
-const MapAccelerometer: React.FC<ChildProps> = ({ setSpeed, speed }) => {
+const MapAccelerometer: React.FC<ChildProps> = ({ setSpeed, speed, setTripEnded }) => {
     // Location state
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [locationSubscription, setLocationSubscription] = useState<Location.LocationSubscription | null>(null);
@@ -33,7 +34,7 @@ const MapAccelerometer: React.FC<ChildProps> = ({ setSpeed, speed }) => {
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     // Trip tracking state
-    const [isTracking, setIsTracking] = useState<boolean>(false);
+    const [isTracking, setIsTracking] = useState<boolean>(true);
     const isTrackingRef = useRef<boolean>(isTracking);
     const [totalSpeed, setTotalSpeed] = useState<number>(0);
     const [sampleCount, setSampleCount] = useState<number>(0);
@@ -45,6 +46,8 @@ const MapAccelerometer: React.FC<ChildProps> = ({ setSpeed, speed }) => {
     // Update isTrackingRef whenever isTracking changes
     useEffect(() => {
         isTrackingRef.current = isTracking;
+
+        if (isTracking === false) setTripEnded(true);
     }, [isTracking]);
 
     // Location functions
