@@ -5,15 +5,20 @@ export const useCalculateDriving = () => {
   const [tripEnded, setTripEnded] = useState(false);
   const [acceleration, setAcceleration] = useState(0);
   const [speed, setSpeed] = useState(0);
-  const [braking, setBraking] = useState(0);
-  const [cornering, setCornering] = useState(0);
+  const [brakingScore, setBrakingScore] = useState(0);
+  const [totalBrakingScore, setTotalBrakingScore] = useState(0);
+  const [corneringScore, setCorneringScore] = useState(0);
   const [accelerationMagnitude, setAccelerationMagnitude] = useState(0); // To store the magnitude of acceleration
   const [lastSpeed, setLastSpeed] = useState(0); // To store the previous speed for acceleration calculation
   const [accelerationScore, setAccelerationScore] = useState(100); // The score based on acceleration behavior
   const [totalAccelerationScore, setTotalAccelerationScore] = useState(0); // Cumulative score
   const [scoreCount, setScoreCount] = useState(0); // Number of updates
 
+  const [isBraking, setIsBraking] = useState(false);
+  const [deceleration, setDeceleration] = useState(0);
+
   const maxAcc = 5; // Threshold for smooth acceleration (e.g., 5 m/s² could be considered aggressive)
+  const breakingThreshold = -5;
 
   const calcAcceleration = () => {
     let accelerationData = useRef({ x: 0, y: 0, z: 0 });
@@ -60,8 +65,15 @@ export const useCalculateDriving = () => {
   };
 
   const calcBraking = () => {
-    // Placeholder logic for braking
-    setBraking(Math.random() * 100);
+    const difference = speed - lastSpeed;
+    const interval = 0.5;
+    const currentDeceleration = difference / interval;
+
+    setDeceleration(currentDeceleration);
+    setIsBraking(currentDeceleration < breakingThreshold);
+
+    setTotalBrakingScore(prevTotal => prevTotal + currentDeceleration);
+    setBrakingScore(totalBrakingScore / scoreCount);
   };
 
   const calcCornering = () => {
@@ -109,7 +121,7 @@ export const useCalculateDriving = () => {
       }, 500);
     }, []);
 
-    setCornering(score);
+    setCorneringScore(score);
   };
 
   // Start calculating
@@ -128,5 +140,5 @@ export const useCalculateDriving = () => {
     }
   }, [speed, tripEnded]);
 
-  return { calcAcceleration, calcSpeed, calcBraking, calcCornering, acceleration, speed, braking, cornering };
+  return { calcAcceleration, calcSpeed, calcBraking, calcCornering, acceleration, speed, brakingScore, corneringScore };
 };
