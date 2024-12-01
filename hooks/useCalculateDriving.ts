@@ -94,65 +94,65 @@ export const useCalculateDriving = (tripEnded = false, speedLimit = 50) => {
     });
   };
 
-  const calcBraking = () => {
-    const difference = speed - lastSpeed;
-    const interval = 0.5;
-    const currentDeceleration = difference / interval;
+  // const calcBraking = () => {
+  //   const difference = speed - lastSpeed;
+  //   const interval = 0.5;
+  //   const currentDeceleration = difference / interval;
 
-    setDeceleration(currentDeceleration);
-    setIsBraking(currentDeceleration < breakingThreshold);
+  //   setDeceleration(currentDeceleration);
+  //   setIsBraking(currentDeceleration < breakingThreshold);
 
-    setTotalBrakingScore(prevTotal => prevTotal + currentDeceleration);
-    setBrakingScore(totalBrakingScore / scoreCount);
-  };
+  //   setTotalBrakingScore(prevTotal => prevTotal + currentDeceleration);
+  //   setBrakingScore(totalBrakingScore / scoreCount);
+  // };
 
-  const calcCornering = () => {
-    let gyroData = useRef({ x: 0, y: 0, z: 0 });
-    const [gyroEnabled, setGyroEnabled] = useState(true);
-    const [phoneOrientation, setPhoneOrientation] = useState(0);
-    const [badCorneringInstances, setBadCorneringInstances] = useState(0);
-    const [totalCorneringInstances, setTotalCorneringInstances] = useState(0);
-    const [score, setScore] = useState(0);
+  // const calcCornering = () => {
+  //   let gyroData = useRef({ x: 0, y: 0, z: 0 });
+  //   const [gyroEnabled, setGyroEnabled] = useState(true);
+  //   const [phoneOrientation, setPhoneOrientation] = useState(0);
+  //   const [badCorneringInstances, setBadCorneringInstances] = useState(0);
+  //   const [totalCorneringInstances, setTotalCorneringInstances] = useState(0);
+  //   const [score, setScore] = useState(0);
 
-    useEffect(() => {
-      function updateCornering() {
-        let subscription;
-        if (gyroEnabled) {
-          subscription = Gyroscope.addListener(gyroscopeData => {
-            gyroData.current = gyroscopeData;
-          });
-        } else {
-          subscription?.remove();
-        }
+  //   useEffect(() => {
+  //     function updateCornering() {
+  //       let subscription;
+  //       if (gyroEnabled) {
+  //         subscription = Gyroscope.addListener(gyroscopeData => {
+  //           gyroData.current = gyroscopeData;
+  //         });
+  //       } else {
+  //         subscription?.remove();
+  //       }
 
-        let orientation;
-        orientation = DeviceMotion.addListener(phoneOrientation => {
-          setPhoneOrientation(phoneOrientation.orientation);
-        });
+  //       let orientation;
+  //       orientation = DeviceMotion.addListener(phoneOrientation => {
+  //         setPhoneOrientation(phoneOrientation.orientation);
+  //       });
 
-        if (Math.abs(gyroData.current.y) > 0.5 && phoneOrientation === 0) {
-          setTotalCorneringInstances(prevTotal => prevTotal + 1);
-          if (gyroData.current.y > 2 || gyroData.current.y < -2) {
-            setBadCorneringInstances(badCorneringInstances + 1);
-          }
-        }
+  //       if (Math.abs(gyroData.current.y) > 0.5 && phoneOrientation === 0) {
+  //         setTotalCorneringInstances(prevTotal => prevTotal + 1);
+  //         if (gyroData.current.y > 2 || gyroData.current.y < -2) {
+  //           setBadCorneringInstances(badCorneringInstances + 1);
+  //         }
+  //       }
 
-        // Add to the total counter and bad driving counter when threshold corners occur
-        setScore(100 + 83 * Math.LN2 * (1 - 0.007 * (badCorneringInstances / totalCorneringInstances) * 100));
+  //       // Add to the total counter and bad driving counter when threshold corners occur
+  //       setScore(100 + 83 * Math.LN2 * (1 - 0.007 * (badCorneringInstances / totalCorneringInstances) * 100));
 
-        return () => {
-          subscription?.remove();
-          score;
-        };
-      }
+  //       return () => {
+  //         subscription?.remove();
+  //         score;
+  //       };
+  //     }
 
-      const intervalId = setInterval(() => {
-        if (!tripEnded) updateCornering();
-      }, 500);
-    }, []);
+  //     const intervalId = setInterval(() => {
+  //       if (!tripEnded) updateCornering();
+  //     }, 500);
+  //   }, []);
 
-    setCorneringScore(score);
-  };
+  //   setCorneringScore(score);
+  // };
 
   useEffect(() => {
     const interval = 0.1; // Update interval in seconds (100 ms)
@@ -173,8 +173,8 @@ export const useCalculateDriving = (tripEnded = false, speedLimit = 50) => {
     const intervalId = setInterval(() => {
       if (!tripEnded) {
         setScoreCount((prevCount) => prevCount + 1);
-        calcBraking();
-        calcCornering();
+        // calcBraking();
+        // calcCornering();
       }
     }, 500);
 
