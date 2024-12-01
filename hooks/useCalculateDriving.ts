@@ -105,9 +105,8 @@ export const useCalculateDriving = (tripEnded = false) => {
   
       const limits = [30, 40, 50, 60, 70, 80];
       setSpeedLimit(limits[Math.floor(Math.random() * limits.length)]);
-    }, Math.floor(Math.random() * (120000 - 30000 + 1)) + 30000); // Random interval between 30s (30000ms) and 2 minutes (120000ms)
-  };
-  
+    }, Math.floor(Math.random() * (60000 - 15000 + 1)) + 15000); // Random interval between 15s (15000ms) and 1 minute (60000ms)
+  };  
 
   useEffect(() => {
     if (!gyroEnabled) return;
