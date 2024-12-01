@@ -1,67 +1,97 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Gyroscope, Accelerometer, DeviceMotion } from 'expo-sensors';
 
-export const useCalculateDriving = () => {
-  const [tripEnded, setTripEnded] = useState(false);
-  const [acceleration, setAcceleration] = useState(0);
-  const [speed, setSpeed] = useState(0);
+export const useCalculateDriving = (tripEnded = false, speedLimit = 50) => {
+  const [speed, setSpeed] = useState(0); // Speed in km/h
+  const [accelerationScore, setAccelerationScore] = useState(0);
   const [brakingScore, setBrakingScore] = useState(0);
-  const [totalBrakingScore, setTotalBrakingScore] = useState(0);
   const [corneringScore, setCorneringScore] = useState(0);
-  const [accelerationMagnitude, setAccelerationMagnitude] = useState(0); // To store the magnitude of acceleration
-  const [lastSpeed, setLastSpeed] = useState(0); // To store the previous speed for acceleration calculation
-  const [accelerationScore, setAccelerationScore] = useState(100); // The score based on acceleration behavior
-  const [totalAccelerationScore, setTotalAccelerationScore] = useState(0); // Cumulative score
+  const [speedScore, setSpeedScore] = useState(100); // Score between 0-100
   const [scoreCount, setScoreCount] = useState(0); // Number of updates
+
+  const [velocity, setVelocity] = useState(0); // Current velocity in m/s
 
   const [isBraking, setIsBraking] = useState(false);
   const [deceleration, setDeceleration] = useState(0);
+  const [totalBrakingScore, setTotalBrakingScore] = useState(0);
+  const [lastSpeed, setLastSpeed] = useState(0);
 
-  const maxAcc = 5; // Threshold for smooth acceleration (e.g., 5 m/s² could be considered aggressive)
   const breakingThreshold = -5;
 
-  const calcAcceleration = () => {
-    let accelerationData = useRef({ x: 0, y: 0, z: 0 });
-
-    const accelerationSubscription = Accelerometer.addListener(accelData => {
-      accelerationData.current = accelData;
-
-      const magnitude = Math.sqrt(
-        Math.pow(accelerationData.current.x, 2) +
-        Math.pow(accelerationData.current.y, 2) +
-        Math.pow(accelerationData.current.z, 2)
-      );
-      setAccelerationMagnitude(magnitude);
-
-      const deltaSpeed = Math.abs(speed - lastSpeed);
-      const rateOfAcceleration = deltaSpeed / 0.5;
-
-      let currentScore;
-      if (rateOfAcceleration > maxAcc) {
-        currentScore = 20; // Aggressive acceleration, lower score
-      } else {
-        currentScore = Math.max(80, 100 - rateOfAcceleration * 5); // Smooth acceleration gets a higher score
-      }
-
-      // Update the cumulative acceleration score
-      setTotalAccelerationScore(prevTotal => prevTotal + currentScore);
-      setScoreCount(prevCount => prevCount + 1); // Increase the update count
-
-      setLastSpeed(speed);
-
-      if (tripEnded) {
-        const averageScore = totalAccelerationScore / scoreCount;
-        setAcceleration(averageScore);
-      } else {
-        setAcceleration(currentScore);
-      }
-    });
-
-    return () => accelerationSubscription.remove();
+  // Function to calculate acceleration magnitude
+  const calculateAccelerationMagnitude = (acceleration) => {
+    return Math.sqrt(
+      acceleration.x ** 2 + acceleration.y ** 2 + acceleration.z ** 2
+    );
   };
 
-  const calcSpeed = () => {
-    setSpeed(Math.random() * 100); // Random speed for testing
+  const NOISE_THRESHOLD = 0.1; // Ignore accelerations below this in m/s²
+
+  const calcSpeed = (acceleration, interval) => {
+    const accelerationMagnitude = calculateAccelerationMagnitude(acceleration);
+
+    // Subtract gravity (9.8 m/s²) to calculate net horizontal acceleration
+    let netAcceleration = accelerationMagnitude - 9.8;
+
+    // Ignore small changes caused by noise
+    if (Math.abs(netAcceleration) < NOISE_THRESHOLD) {
+      netAcceleration = 0;
+    }
+
+    // Update velocity using v = u + at
+    const newVelocity = velocity + netAcceleration * interval; // in m/s
+
+    // Ensure velocity doesn't go below 0 (e.g., if stopping completely)
+    const clampedVelocity = Math.max(0, newVelocity);
+
+    // Convert velocity to speed in km/h
+    const speedInKmH = Math.round(clampedVelocity * 3.6);
+
+    setVelocity(clampedVelocity);
+    setLastSpeed(speed);
+    setSpeed(speedInKmH);
+
+    // Calculate speed score
+    calcSpeedScore(speedInKmH);
+  };
+
+
+  const calcSpeedScore = (currentSpeed) => {
+    const speedDifference = currentSpeed - speedLimit;
+    let currentSpeedScore;
+
+    if (speedDifference <= 5 && speedDifference >= -5) {
+      // Within the speed limit range or below, perfect score
+      currentSpeedScore = 100;
+    } else if (speedDifference > 5) {
+      // Above the speed limit, penalize
+      currentSpeedScore = Math.max(0, 100 - (speedDifference - 5) * 2);
+    } else {
+      // Below the speed limit beyond the threshold (e.g., excessively slow)
+      currentSpeedScore = Math.max(80, 100 + speedDifference); // Reduced penalty
+    }
+
+    setSpeedScore((prevTotal) => {
+      const newTotal = prevTotal * scoreCount + currentSpeedScore;
+      return Math.round(newTotal / (scoreCount + 1)); // Update accumulative average
+    });
+  };
+
+  const calcAcceleration = (accelerationMagnitude) => {
+    const maxAcc = 5; // Smooth acceleration threshold
+    const rateOfAcceleration = accelerationMagnitude;
+  
+    let currentScore;
+    if (rateOfAcceleration > maxAcc) {
+      currentScore = 20; // Aggressive acceleration, lower score
+    } else {
+      currentScore = Math.max(80, 100 - rateOfAcceleration * 5); // Smooth acceleration gets a higher score
+    }
+  
+    setAccelerationScore((prevTotal) => {
+      const newTotal = prevTotal * scoreCount + currentScore;
+      return Math.round(newTotal / (scoreCount + 1)); // Update accumulative average
+    });
   };
 
   const calcBraking = () => {
@@ -124,21 +154,38 @@ export const useCalculateDriving = () => {
     setCorneringScore(score);
   };
 
-  // Start calculating
   useEffect(() => {
-    if (!tripEnded) {
-      const intervalId = setInterval(() => {
-        // Refresh the acceleration calculation every 0.5 seconds
-        calcAcceleration();
-        calcSpeed();
+    const interval = 0.1; // Update interval in seconds (100 ms)
+  
+    // Set accelerometer update interval
+    Accelerometer.setUpdateInterval(interval * 1000);
+  
+    const subscription = Accelerometer.addListener((accelerometerData) => {
+      calcSpeed(accelerometerData, interval);
+      const accelerationMagnitude = calculateAccelerationMagnitude(accelerometerData);
+      calcAcceleration(accelerationMagnitude);
+    });
+  
+    return () => subscription?.remove();
+  }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (!tripEnded) {
+        setScoreCount((prevCount) => prevCount + 1);
         calcBraking();
         calcCornering();
-      }, 500); // 500 milliseconds = 0.5 seconds
+      }
+    }, 500);
 
-      // Cleanup interval when the trip ends
-      return () => clearInterval(intervalId);
-    }
-  }, [speed, tripEnded]);
+    return () => clearInterval(intervalId);
+  }, [tripEnded]);
 
-  return { calcAcceleration, calcSpeed, calcBraking, calcCornering, acceleration, speed, brakingScore, corneringScore };
+  return {
+    speed, // Speed in km/h
+    speedScore, // Accumulative average score
+    accelerationScore,
+    brakingScore,
+    corneringScore,
+  };
 };
