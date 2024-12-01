@@ -9,8 +9,9 @@ import { useCalculateDriving } from "@/hooks/useCalculateDriving";
 
 const GPSDrawer = () => {
   const [speedMath, setSpeed] = useState(0);
-  const [speedLimit, setSpeedLimit] = useState(0);
   const [tripEnded, setTripEnded] = useState(false);
+
+  const {speed, speedLimit, accelerationScore, speedScore, brakingScore, corneringScore} = useCalculateDriving(tripEnded);
 
   function getSpeedColor() {
     if (speed >= speedLimit - 5 && speed <= speedLimit + 5) return "green";
@@ -19,8 +20,6 @@ const GPSDrawer = () => {
   }
 
   const [speedColor, setSpeedColor] = useState(getSpeedColor());
-
-  const {speed, accelerationScore, speedScore, brakingScore, corneringScore} = useCalculateDriving(tripEnded, 0);
 
   useEffect(() => {
     setSpeedColor(getSpeedColor());
@@ -112,8 +111,8 @@ const GPSDrawer = () => {
                       <Text style={{marginLeft: "auto"}}><Text style={{fontWeight: "800"}}>{speedScore}%</Text> speed</Text>
                     </View>
                     <View style={{ paddingLeft: 5, paddingRight: 5, display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: '100%' }}>
-                      <Text><Text style={{fontWeight: "800"}}>{brakingScore}</Text> braking</Text>
-                      <Text style={{marginLeft: "auto"}}><Text style={{fontWeight: "800"}}>{corneringScore}</Text> cornering</Text>
+                      <Text><Text style={{fontWeight: "800"}}>{brakingScore}%</Text> braking</Text>
+                      <Text style={{marginLeft: "auto"}}><Text style={{fontWeight: "800"}}>{corneringScore}%</Text> cornering</Text>
                     </View>
 
 
