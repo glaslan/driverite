@@ -1,20 +1,16 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import Dashboard from '../../components/Dashboard';
+import { StyleSheet, View, Platform, Text } from 'react-native';
 import { useEffect, useState } from 'react';
-import StartPage from '@/components/StartPage';
-import TripPage from '@/components/TripPage';
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import MapAccelerometer from '@/components/MapAccelerometer';
 import { useTripStorage } from '@/hooks/useTripStorage';
+import GPSDrawer from '@/components/GPSDrawer';
+import StartPage from '@/components/StartPage';
+import TripPage from '@/components/TripPage';
+import * as Location from 'expo-location';
+import { fetchWeatherApi } from 'openmeteo';
 
 export default function HomeScreen() {
-  const { generateDummyData } = useTripStorage()
-
+  const { generateDummyData } = useTripStorage();
   const [tripStarted, setTripStarted] = useState(false);
 
   const theme = {
@@ -27,14 +23,39 @@ export default function HomeScreen() {
       text: '#000000',
     },
   };
-  
+
   useEffect(() => {
     generateDummyData();
   }, []);
 
   return (
     <PaperProvider theme={theme}>
-    {!tripStarted ? <StartPage setTripStarted={setTripStarted} /> : <MapAccelerometer />}
+      {!tripStarted ? (
+        <StartPage setTripStarted={setTripStarted} />
+      ) : (
+        <TripPage />
+      )}
     </PaperProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  gpsDrawer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1, // Ensures GPSDrawer is above MapAccelerometer
+    pointerEvents: 'auto', // GPSDrawer remains interactive
+  },
+  mapAccelerometer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0, // MapAccelerometer is below GPSDrawer
+    pointerEvents: 'auto', // Allows MapAccelerometer to be interactive behind the GPSDrawer
+  },
+});
