@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Platform, Text } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import MapAccelerometer from '@/components/MapAccelerometer';
@@ -6,6 +6,8 @@ import { useTripStorage } from '@/hooks/useTripStorage';
 import GPSDrawer from '@/components/GPSDrawer';
 import StartPage from '@/components/StartPage';
 import TripPage from '@/components/TripPage';
+import * as Location from 'expo-location';
+import { fetchWeatherApi } from 'openmeteo';
 
 export default function HomeScreen() {
   const { generateDummyData } = useTripStorage();

@@ -67,16 +67,24 @@ export const useTripStorage = () => {
     }
 
     async function getTripHistory() {
-        const keys = await AsyncStorage.getAllKeys();
-        let trips: Trip[] = [];
-      
-        for (let i = 0; i < keys.length; i++) {
+      const keys = await AsyncStorage.getAllKeys();
+      let trips: Trip[] = [];
+  
+      for (let i = 0; i < keys.length; i++) {
           const trip = await LoadObjectFromStorage(keys[i]);
           trips[i] = trip;
-        }
-   
-        return trips;
       }
+  
+      // Sort trips by startDate in descending order
+      trips.sort((a, b) => {
+          const dateA = new Date(a.tripStart).getTime();
+          const dateB = new Date(b.tripStart).getTime();
+          return dateB - dateA; // Most recent trips first
+      });
+  
+      return trips;
+  }
+  
 
       async function getOverallAverage() {
         const keys = await AsyncStorage.getAllKeys();
