@@ -43,16 +43,25 @@ export const useTripStorage = () => {
     }
 
     async function generateDummyData(amount = 10) {
+      // Function favors higher scores
+      function getRandomScore() {
+        if (Math.floor(Math.random() * 4) > 1) {
+          return Math.round((Math.random() * 30) + 70);
+        }
+
+        return Math.round(Math.random() * 69);
+      }
+
         await emptyDatabase();
 
         for (let i = 0; i < amount; i++) {
             const tripData = Object.assign({}, tripTemplate);
 
             // Populate stats with random scores
-            tripData.acceleration = Math.round(Math.random() * 100);
-            tripData.speed = Math.round(Math.random() * 100);
-            tripData.braking = Math.round(Math.random() * 100);
-            tripData.cornering = Math.round(Math.random() * 100);
+            tripData.acceleration = getRandomScore();
+            tripData.speed = getRandomScore();
+            tripData.braking = getRandomScore();
+            tripData.cornering = getRandomScore();
             tripData.score = getTripAverage(tripData);
 
             // Set random time and duration of trip
