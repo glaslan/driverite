@@ -35,18 +35,25 @@ export const useCalculateDriving = (tripEnded = false) => {
   };
 
   const calcSpeed = (acceleration, interval) => {
-    const accelerationMagnitude = calculateAccelerationMagnitude(acceleration);
-    let netAcceleration = accelerationMagnitude - 9.8;
-
-    if (Math.abs(netAcceleration) < NOISE_THRESHOLD) {
-      netAcceleration = 0;
+    const currentAcceleration = calculateAccelerationMagnitude(acceleration);
+  
+    // Apply noise filtering
+    if (Math.abs(currentAcceleration) < NOISE_THRESHOLD) {
+      return;
     }
 
-    const newVelocity = velocity + netAcceleration * interval;
-    const clampedVelocity = Math.max(0, newVelocity);
-    const speedInKmH = Math.round(clampedVelocity * 3.6);
+    // Update velocity using trapezoidal integration
+    const newVelocity = velocity + (currentAcceleration * interval);
+    
+    // Apply decay factor to prevent drift
+    const decayFactor = 0.95;
+    const decayedVelocity = newVelocity * decayFactor;
+    
+    // Convert to km/h and ensure non-negative
+    const speedInKmH = Math.max(0, Math.round(decayedVelocity * 3.6));
+    //if (speedInKmH > 0) console.log(speedInKmH + 0);    
 
-    setVelocity(clampedVelocity);
+    setVelocity(decayedVelocity);
     setLastSpeed(speed);
     setSpeed(speedInKmH);
     calcSpeedScore(speedInKmH);
