@@ -3,8 +3,9 @@ import {ScrollView ,Text, View, StyleSheet} from 'react-native';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import Drivingstats from '@/app/(tabs)/DrivingStats';
 import { useTripStorage } from '@/hooks/useTripStorage'
+import { IconButton } from 'react-native-paper';
 
-export default function ViewTripProgress(){
+export default function ViewTripProgress({ recentTrip, setShowTripSummary }) {
     //const [genScore, setGeneralScore] = useState(getTripAverage());
     //const [brkScore, setBrakingScore] = useState(braking);
     //const [spdScore, setSpeedScore] = useState(speed);
@@ -75,25 +76,42 @@ export default function ViewTripProgress(){
 
     return (
         <View style={styles.container}>
-            <Text style={styles.Title}>Trip Summary</Text>
+            <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%"}}>
+                <IconButton 
+                    icon="arrow-left"
+                    iconColor="black" 
+                    size={30} 
+                    onPress={()=>{setShowTripSummary(false)}} 
+                />
+                    
+                <Text style={styles.Title}>Trip Summary</Text>
+                    
+                <IconButton 
+                    icon="arrow-left"
+                    iconColor="rgba(0,0,0,0)" 
+                    size={30} 
+                    onPress={() => { }}
+                />
+            </View>
+
             <Text style={styles.Title}>Driving Scores</Text>
             <View style={styles.progressContainer}>
                 <CircleDisplay
-                    score={genScore}
+                    score={recentTrip.score}
                     radivalue={80}
                 />
                 <Text style={styles.text}>General rating</Text>
                 <View style={styles.progressrow}>
                   <View style={styles.circleContainer}>
                     <CircleDisplay
-                        score={accScore}
+                        score={recentTrip.acceleration}
                         radivalue={45}
                     />
                     <Text style={styles.text}>Acceleration</Text>
                   </View>
                   <View style={styles.circleContainer}>
                     <CircleDisplay
-                        score={spdScore}
+                        score={recentTrip.speed}
                         radivalue={45}
                     />
                     <Text style={styles.text}>Speed</Text>
@@ -102,14 +120,14 @@ export default function ViewTripProgress(){
                 <View style={styles.progressrow}>
                   <View style={styles.circleContainer}>
                     <CircleDisplay
-                        score={brkScore}
+                        score={recentTrip.braking}
                         radivalue={45}
                     />
                     <Text style={styles.text}>Braking</Text>
                   </View>
                   <View style={styles.circleContainer}>
                     <CircleDisplay
-                        score={corScore}
+                        score={recentTrip.cornering}
                         radivalue={45}
                     />
                     <Text style={styles.text}>Cornering</Text>
@@ -121,27 +139,27 @@ export default function ViewTripProgress(){
                 style={styles.scrollContainer} 
                 contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}
             >
-                {brkScore < 70 && (
+                {recentTrip.braking < 70 && (
                     <InfoCard
                         typescore="braking"
                     />
                 )}
-                {accScore < 70 && (
+                {recentTrip.acceleration < 70 && (
                     <InfoCard
                         typescore="acceleration"
                     />
                 )}
-                {spdScore < 70 && (
+                {recentTrip.speed < 70 && (
                     <InfoCard
                         typescore="speed"
                     />
                 )}
-                {corScore < 70 && (
+                {recentTrip.cornering < 70 && (
                     <InfoCard
                         typescore="cornering"
                     />
                 )}
-                {brkScore >= 70 && accScore >= 70 && spdScore >= 70 && corScore >= 70 && (
+                {recentTrip.braking >= 70 && recentTrip.acceleration >= 70 && recentTrip.speed >= 70 && recentTrip.cornering >= 70 && (
                     <InfoCard 
                         typescore="all-good"
                     />
@@ -173,13 +191,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        flex: 1,
         display: 'flex',
         paddingTop: 5,
-        width: '100%'
+        width: '100%',
+        marginBottom: 10,
     },
     circleContainer:{
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         width: 175,

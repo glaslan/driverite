@@ -46,7 +46,7 @@ export const useCalculateDriving = (tripEnded = false) => {
     const newVelocity = velocity + (currentAcceleration * interval);
     
     // Apply decay factor to prevent drift
-    const decayFactor = 0.95;
+    const decayFactor = 1;
     const decayedVelocity = newVelocity * decayFactor;
     
     // Convert to km/h and ensure non-negative
@@ -95,15 +95,17 @@ export const useCalculateDriving = (tripEnded = false) => {
   };
 
   const calcBraking = () => {
-    const difference = speed - lastSpeed;
+    const difference = Math.abs(speed - lastSpeed);
     const interval = 0.5;
     const currentDeceleration = difference / interval;
 
     setDeceleration(currentDeceleration);
     setIsBraking(currentDeceleration < breakingThreshold);
 
-    setTotalBrakingScore((prevTotal) => prevTotal + currentDeceleration);
-    setBrakingScore(totalBrakingScore / scoreCount);
+    setBrakingScore((prevTotal) => {
+      const newTotal = prevTotal * scoreCount + currentDeceleration;
+      return Math.round(newTotal / (scoreCount + 1));
+    });
   };
 
   const setRandomSpeedLimit = () => {
@@ -164,6 +166,10 @@ export const useCalculateDriving = (tripEnded = false) => {
           accelerometerData
         );
         calcAcceleration(accelerationMagnitude);
+        
+        if (isBraking) {
+          calcBraking();
+        }
       }
     );
 

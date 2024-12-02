@@ -8,10 +8,22 @@ import StartPage from '@/components/StartPage';
 import TripPage from '@/components/TripPage';
 import * as Location from 'expo-location';
 import { fetchWeatherApi } from 'openmeteo';
+import ViewEndTrip from '@/components/ViewEndTrip';
 
 export default function HomeScreen() {
-  const { generateDummyData } = useTripStorage();
+  const { emptyDatabase } = useTripStorage();
   const [tripStarted, setTripStarted] = useState(false);
+  const [showTripSummary, setShowTripSummary] = useState(false);
+  const [startTime, setStartTime] = useState(new Date());
+  const [recentTrip, setRecentTrip] = useState({
+      score: 0,
+      acceleration: 0,
+      speed: 0,
+      braking: 0,
+      cornering: 0,
+      tripStart: new Date(),
+      tripEnd: new Date(),
+  });
 
   const theme = {
     ...DefaultTheme,
@@ -25,15 +37,19 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    generateDummyData();
+    //generateDummyData();
   }, []);
 
   return (
     <PaperProvider theme={theme}>
-      {!tripStarted ? (
-        <StartPage setTripStarted={setTripStarted} />
+      {tripStarted ? (
+          <TripPage setTripStarted={setTripStarted} setShowTripSummary={setShowTripSummary} setRecentTrip={setRecentTrip} startTime={startTime} />
       ) : (
-        <TripPage />
+          showTripSummary ? (
+            <ViewEndTrip recentTrip={recentTrip} setShowTripSummary={setShowTripSummary} />
+          ) : (
+            <StartPage setTripStarted={setTripStarted} setStartTime={setStartTime} />
+          )
       )}
     </PaperProvider>
   );

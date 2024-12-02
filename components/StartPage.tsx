@@ -6,6 +6,7 @@ import { useTripStorage } from '@/hooks/useTripStorage';
 
 type StartPageProps = {
     setTripStarted: React.Dispatch<React.SetStateAction<boolean>>;
+    setStartTime: React.Dispatch<React.SetStateAction<Date>>;
 };
 
 interface weatherData {
@@ -23,7 +24,7 @@ interface widgetStats {
     lastTrip: number;
 }
 
-const StartPage: React.FC<StartPageProps> = ({ setTripStarted }) => {
+const StartPage: React.FC<StartPageProps> = ({ setTripStarted, setStartTime }) => {
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [weatherStats, setWeatherStats] = useState<weatherStats>();
     const [weatherData, setWeatherData] = useState<weatherData>();
@@ -113,7 +114,7 @@ const StartPage: React.FC<StartPageProps> = ({ setTripStarted }) => {
                 </Card>
             </View>
 
-            <Button icon="car" mode="contained" onPress={() => setTripStarted(true)} style={{width: "90%", height: 60, justifyContent: "center", alignItems: "center", alignSelf: "center", marginTop: 20}}>
+            <Button icon="car" mode="contained" onPress={() => {setTripStarted(true); setStartTime(new Date());}} style={{width: "90%", height: 60, justifyContent: "center", alignItems: "center", alignSelf: "center", marginTop: 20}}>
                 Start Trip!
             </Button>
         </View>

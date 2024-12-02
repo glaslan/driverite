@@ -4,10 +4,10 @@ import GPSDrawer from "./GPSDrawer";
 import MapAccelerometer from "./MapAccelerometer";
 import { useState } from "react";
 
-export default function TripPage() {
+export default function TripPage({ setTripStarted, setShowTripSummary, setRecentTrip, startTime }) {
     return(<>
     <View style={styles.gpsDrawer}>
-      <GPSDrawer />
+      <GPSDrawer setTripStarted={setTripStarted} setShowTripSummary={setShowTripSummary} setRecentTrip={setRecentTrip} startTime={startTime} />
     </View>
 </>);
 };

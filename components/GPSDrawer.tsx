@@ -6,12 +6,14 @@ import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { Button, Surface } from "react-native-paper";
 import MapAccelerometer from "./MapAccelerometer";
 import { useCalculateDriving } from "@/hooks/useCalculateDriving";
+import { useTripStorage } from "@/hooks/useTripStorage";
 
-const GPSDrawer = () => {
+const GPSDrawer = ({ setTripStarted, setShowTripSummary, setRecentTrip, startTime }) => {
   const [speedMath, setSpeed] = useState(0);
   const [tripEnded, setTripEnded] = useState(false);
 
-  const {speed, speedLimit, accelerationScore, speedScore, brakingScore, corneringScore} = useCalculateDriving(tripEnded);
+  const { speed, speedLimit, accelerationScore, speedScore, brakingScore, corneringScore } = useCalculateDriving(tripEnded);
+  const { saveTrip } = useTripStorage();
 
   function getSpeedColor() {
     if (speed >= speedLimit - 5 && speed <= speedLimit + 5) return "green";
@@ -51,7 +53,21 @@ const GPSDrawer = () => {
 }
 
   function handleEndTrip() {
-    
+    const trip = {
+      score: (accelerationScore + speedScore + brakingScore + corneringScore) / 4,
+      acceleration: accelerationScore,
+      speed: speedScore,
+      braking: brakingScore,
+      cornering: corneringScore,
+      tripStart: startTime,
+      tripEnd: new Date(),
+    };
+  
+    saveTrip(trip);
+    setTripStarted(false);
+    setTripEnded(true);
+    setShowTripSummary(true);
+    setRecentTrip(trip);
   }
 
   return (
@@ -131,7 +147,7 @@ const GPSDrawer = () => {
                     </View>
                     <View style={{display: "flex", justifyContent: "center", alignItems: "center", marginTop: 30}}>
                      <Button mode="contained" buttonColor="red" textColor="white" style={{width: "80%", height: 50, display: "flex", justifyContent: "center", alignContent: "center"}}
-                     onPress={() => {console.log("End trip button was pressed")}}>End Trip</Button>
+                      onPress={() => { handleEndTrip(); }}>End Trip</Button>
                     </View>
                 </View>
             <View>
