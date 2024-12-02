@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { IconButton, Surface, Text } from 'react-native-paper';
+import { Divider, IconButton, Surface, Text } from 'react-native-paper';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import DrivingScore from '@/components/DrivingScore';
 import { useTripStorage } from '@/hooks/useTripStorage';
@@ -13,6 +13,16 @@ interface DrivingScoresProps {
     Braking: number;
     Cornering: number;
   };
+}
+
+interface Trip {
+  score: number;
+  acceleration: number;
+  speed: number;
+  braking: number;
+  cornering: number;
+  tripStart: Date;
+  tripEnd: Date;
 }
 
 export default function DrivingStatsPage() {
@@ -31,7 +41,7 @@ export default function DrivingStatsPage() {
 }
 
 function DrivingStats({ onHistoryClicked }: { onHistoryClicked: () => void }) {
-  const {getOverallAverage} = useTripStorage();
+  const {getOverallAverage, getTripHistory} = useTripStorage();
 
   const [overallScore, setOverallScore] = useState<number>(0);
   const [scores, setScores] = useState({
@@ -40,9 +50,11 @@ function DrivingStats({ onHistoryClicked }: { onHistoryClicked: () => void }) {
     Braking: 0,
     Cornering: 0,
   });
+  const [trips, setTrips] = useState<Array<Trip>>()
+  const [driveTime, setDriveTime] = useState(0);
 
   useEffect(() => {
-    async function fetchScores() {
+    async function fetchStats() {
       const { overallAverage, overallAcceleration, overallSpeed, overallBraking, overallCornering } = await getOverallAverage();
 
       setOverallScore(overallAverage);
@@ -52,9 +64,44 @@ function DrivingStats({ onHistoryClicked }: { onHistoryClicked: () => void }) {
         Braking: overallBraking,
         Cornering: overallCornering
       });
+
+      function getTotalHoursDriving(allTrips: Trip[]): number {
+        if (!Array.isArray(allTrips)) {
+          throw new Error("Invalid input: allTrips must be an array.");
+        }
+      
+        if (allTrips.length === 0) {
+          console.warn("No trips found.");
+          return 0;
+        }
+      
+        let totalMilliseconds = 0;
+      
+        for (let i = 0; i < allTrips.length; i++) {
+          const tripStart = new Date(allTrips[i].tripStart);
+          const tripEnd = new Date(allTrips[i].tripEnd);
+      
+          if (isNaN(tripStart.getTime()) || isNaN(tripEnd.getTime())) {
+            console.error("Invalid trip dates:", allTrips[i]);
+            continue;
+          }
+      
+          totalMilliseconds += tripEnd.getTime() - tripStart.getTime();
+        }
+      
+        const totalHours = totalMilliseconds / (1000 * 60 * 60); // Convert milliseconds to hours
+        const roundedTotalHours = Number(totalHours.toFixed(2));
+        return roundedTotalHours;
+      }
+      
+
+      const allTrips = await getTripHistory();
+      const timeDriving = getTotalHoursDriving(allTrips);
+      setTrips(allTrips);
+      setDriveTime(timeDriving);
     }
 
-    fetchScores();
+    fetchStats();
   }, []);
 
   return (
@@ -84,9 +131,9 @@ function DrivingStats({ onHistoryClicked }: { onHistoryClicked: () => void }) {
         />
       </View>
       <View style={{display: 'flex', flexDirection: "row", width: "100%", height: "13%", padding: 10, gap: 5, justifyContent: 'space-between', marginTop: "5%"}}>
-        <QuickTip messageOne="You've gone on" value={2} messageTwo="trips." color="#c7e0ff" />
-        <QuickTip messageOne="You've spent" value={1284} messageTwo="minutes driving." color="#fff8c2" />
-        <QuickTip messageOne="You're number" value={27} messageTwo="in the world." color="#c7ffc7" />
+        <QuickTip messageOne="You've gone on" value={trips?.length || 0} messageTwo="trips." color="#c7e0ff" />
+        <QuickTip messageOne="You've spent" value={driveTime} messageTwo="hours driving." color="#fff8c2" />
+        <QuickTip messageOne="You're number" value={Math.floor(Math.random() * 500)} messageTwo="in the world." color="#c7ffc7" />
       </View>
 
       <View style={styles.progressContainer}>
@@ -110,27 +157,6 @@ function DrivingStats({ onHistoryClicked }: { onHistoryClicked: () => void }) {
                 )
               }
             </AnimatedCircularProgress>
-        {/* <CircularProgress
-          value={overallScore}
-          radius={135}
-          progressValueColor={'black'}
-          maxValue={100}
-          title={'/ 100'}
-          titleColor={'black'}
-          titleStyle={{ fontWeight: "300", fontSize: 20 }}
-          activeStrokeWidth={50}
-          inActiveStrokeWidth={40}
-          duration={1000}
-          activeStrokeColor={'red'}
-          activeStrokeSecondaryColor={'green'}
-          // strokeColorConfig={[
-          //   { color: '#9d1818', value: 0 },
-          //   { color: 'red', value: 50 },
-          //   { color: 'orange', value: 60 },
-          //   { color: '#e7db43', value: 70 },
-          //   { color: '#89e03b', value: 100 },
-          // ]}
-        /> */}
       </View>
 
       <View style={styles.scoresContainer}>
@@ -142,9 +168,12 @@ function DrivingStats({ onHistoryClicked }: { onHistoryClicked: () => void }) {
 
 function DrivingScores({ scores }: DrivingScoresProps) {
   return (
-    <Surface style={styles.surface}>
+    <Surface style={styles.surface} elevation={0}>
       {Object.keys(scores).map((key) => (
-        <DrivingScore key={key} valueName={key} value={Math.round(scores[key as keyof typeof scores])} />
+        <View key={key}>
+        <DrivingScore valueName={key} value={Math.round(scores[key as keyof typeof scores])} />
+        {key !== "Cornering" && <Divider />}
+        </View>
       ))}
     </Surface>
   );
@@ -203,9 +232,10 @@ const styles = StyleSheet.create({
   },
   surface: {
     backgroundColor: "white",
-    padding: 20,
+    padding: 10,
     width: "95%",
     display: "flex",
     borderRadius: 35,
+
   },
 });

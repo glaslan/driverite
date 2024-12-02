@@ -40,16 +40,12 @@ const StartPage: React.FC<StartPageProps> = ({ setTripStarted }) => {
         }
 
         async function getWeather() {
-            console.log("location", location)
         if (location === null) return;
-            //console.log(location);
-
             const response = await fetch(
             `https://api.open-meteo.com/v1/forecast?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&current_weather=true`
             );
             const jsonResponse = await response.json();
             setWeatherStats(jsonResponse.current_weather);
-            console.log(jsonResponse.current_weather);
             setWeatherData(getWeatherData(jsonResponse.current_weather.weathercode));
 
             getWidgetStats();
@@ -81,19 +77,19 @@ const StartPage: React.FC<StartPageProps> = ({ setTripStarted }) => {
             </View>
             <Card style={{backgroundColor: "white", width: "90%", display: "flex", alignSelf: "center"}}>
                 <Card.Content>
-                    <View style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                         <Icon
                             source={weatherData?.icon || "weather-sunny"}
                             color={weatherData?.color || "white"}
                             size={70}
                         />
-                        <View style={{display: "flex", flexDirection: "row"}}>
-                            <Text style={{fontSize: 48, fontWeight: 600}}>{weatherStats?.temperature}</Text>
-                            <Text style={{fontSize: 16, marginTop: 10}}> °C</Text>
+                        <View style={{ display: "flex", flexDirection: "row" }}>
+                            <Text style={{ fontSize: 48, fontWeight: "600" }}>{weatherStats?.temperature || ""}</Text>
+                            <Text style={{ fontSize: 16, marginTop: 10 }}>°C</Text>
                         </View>
                     </View>
                     <Divider bold style={{marginTop: 15, marginBottom: 15}} />
-                    <Text>{weatherData?.message}</Text>
+                    <Text>{weatherData?.message || ""}</Text>
                 </Card.Content>
             </Card>
 
@@ -101,9 +97,9 @@ const StartPage: React.FC<StartPageProps> = ({ setTripStarted }) => {
             <View style={{display: "flex", flexDirection: "row", justifyContent: "center", alignSelf: "center", gap: 10, width: "90%"}}>
                 <Card style={{backgroundColor: "white"}}>
                     <Card.Content>
-                     <View style={{width: 140, height: 140, display: "flex", justifyContent: "center"}}>
+                        <View style={{width: 140, height: 140, display: "flex", justifyContent: "center"}}>
                             <Text style={{fontSize: 18, fontWeight: 600}}>Overall Score</Text>
-                            <Text style={{fontSize: 48, fontWeight: 800, color: getScoreColor(widgetStats?.overallScore || 0)}}>{widgetStats?.overallScore}%</Text>
+                            <Text style={{fontSize: 48, fontWeight: 800, color: getScoreColor(widgetStats?.overallScore || 0)}}>{widgetStats?.overallScore || ""}%</Text>
                         </View>
                     </Card.Content>
                 </Card>
@@ -111,13 +107,13 @@ const StartPage: React.FC<StartPageProps> = ({ setTripStarted }) => {
                     <Card.Content> 8
                         <View style={{width: 140, height: 140, display: "flex", justifyContent: "center"}}>
                             <Text style={{fontSize: 18, fontWeight: 600}}>Last Trip</Text>
-                            <Text style={{fontSize: 48, fontWeight: 800, color: getScoreColor(widgetStats?.lastTrip || 0)}}>{widgetStats?.lastTrip}%</Text>
+                            <Text style={{fontSize: 48, fontWeight: 800, color: getScoreColor(widgetStats?.lastTrip || 0)}}>{widgetStats?.lastTrip || ""}%</Text>
                         </View>
                     </Card.Content>
                 </Card>
             </View>
 
-            <Button icon="car" mode="contained" onPress={() => setTripStarted(true)} style={{width: "75%", height: 50, justifyContent: "center", alignItems: "center", alignSelf: "center", marginTop: 20}}>
+            <Button icon="car" mode="contained" onPress={() => setTripStarted(true)} style={{width: "90%", height: 60, justifyContent: "center", alignItems: "center", alignSelf: "center", marginTop: 20}}>
                 Start Trip!
             </Button>
         </View>
