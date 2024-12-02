@@ -54,11 +54,11 @@ const GPSDrawer = ({ setTripStarted, setShowTripSummary, setRecentTrip, startTim
 
   function handleEndTrip() {
     const trip = {
-      score: (accelerationScore + speedScore + brakingScore + corneringScore) / 4,
-      acceleration: accelerationScore,
-      speed: speedScore,
-      braking: brakingScore,
-      cornering: corneringScore,
+      score: Math.round((accelerationScore + speedScore + brakingScore + corneringScore) / 4),
+      acceleration: Math.round(accelerationScore),
+      speed: Math.round(speedScore),
+      braking: Math.round(brakingScore),
+      cornering: Math.round(corneringScore),
       tripStart: startTime,
       tripEnd: new Date(),
     };
@@ -146,7 +146,7 @@ const GPSDrawer = ({ setTripStarted, setShowTripSummary, setRecentTrip, startTim
 
                     </View>
                     <View style={{display: "flex", justifyContent: "center", alignItems: "center", marginTop: 30}}>
-                     <Button mode="contained" buttonColor="red" textColor="white" style={{width: "80%", height: 50, display: "flex", justifyContent: "center", alignContent: "center"}}
+                     <Button mode="contained" buttonColor="red" textColor="white" style={{width: "90%", height: 50, display: "flex", justifyContent: "center", alignContent: "center"}}
                       onPress={() => { handleEndTrip(); }}>End Trip</Button>
                     </View>
                 </View>

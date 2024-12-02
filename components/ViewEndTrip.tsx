@@ -1,225 +1,243 @@
 import React, { useState } from 'react';
-import {ScrollView ,Text, View, StyleSheet} from 'react-native';
+import { ScrollView, Text, View, StyleSheet } from 'react-native';
 import CircularProgress from 'react-native-circular-progress-indicator';
-import Drivingstats from '@/app/(tabs)/DrivingStats';
-import { useTripStorage } from '@/hooks/useTripStorage'
-import { IconButton } from 'react-native-paper';
+import { Button, DataTable, Divider, Icon, IconButton } from 'react-native-paper';
+import PagerView from 'react-native-pager-view';
 
 export default function ViewTripProgress({ recentTrip, setShowTripSummary }) {
-    //const [genScore, setGeneralScore] = useState(getTripAverage());
-    //const [brkScore, setBrakingScore] = useState(braking);
-    //const [spdScore, setSpeedScore] = useState(speed);
-    //const [accScore, setAccelerationScore] = useState(acceleration);
-    //const [corScore, setCorneringScore] = useState(cornering);
+  const [activePage, setActivePage] = useState(0); // State to track the active page
 
-    const [genScore, setGeneralScore] = useState(50);
-    const [brkScore, setBrakingScore] = useState(100);
-    const [spdScore, setSpeedScore] = useState(50);
-    const [accScore, setAccelerationScore] = useState(50);
-    const [corScore, setCorneringScore] = useState(50);
+  function getMessage(value) {
+    if (value >= 95) return "Excellent work!";
+    else if (value >= 80) return "Good job!";
+    else if (value >= 70) return "You did ok...";
+    else if (value >= 50) return "You barely made it...";
+    else return "You displayed horrible diving!";
+  }
 
-    //once the values that are being used and what file they are coming from
-    //this can be changed as the rest of the errors that are left
-    //are related to this section above, i can fix this once they 
-    //location/'s have been set
+  function getMessageColor(value) {
+    if (value >= 95) return "#0f8000";
+    else if (value >= 80) return "#89e03b";
+    else if (value >= 70) return "orange";
+    else if (value >= 50) return "red";
+    else return "#9d1818";
+  }
 
-    const InfoCard = ({ typescore }: { typescore: string }) => {
-        let title;
-        let info;
-        if(typescore == 'braking'){
-            title = <Text style={styles.Title}>Braking</Text>
-            info = <Text style={styles.text}>Your braking is hard, we suggest taking your time with it.</Text>
-        }
-        if(typescore == 'speed'){
-            title = <Text style={styles.Title}>Speed</Text>
-            info = <Text style={styles.text}>Your speed isn't great, follow the speed limits displayed.</Text>
-        }
-        if(typescore == 'cornering'){
-            title = <Text style={styles.Title}>Cornering</Text>
-            info = <Text style={styles.text}>You seem to be taking turns badly, we suggest you take your time with it.</Text>
-        }
-        if(typescore == 'acceleration'){
-            title = <Text style={styles.Title}>Acceleration</Text>
-            info = <Text style={styles.text}>Your acceleration isn't great, accelerate at a different rate from what you were.</Text>
-        }
-        if(typescore == 'all-good'){
-            title = <Text style={styles.Title}>Great job</Text>
-            info = <Text style={styles.text}>According to the score calculators, your doing amazing!.</Text>
-        }
-        return (
-            <View>
-                {title}
-                {info}
-            </View>
-        );
-    };
+  function getMessageIcon(value) {
+    if (value >= 95) return "star-circle";
+    else if (value >= 80) return "check-circle";
+    else if (value >= 70) return "minus-circle";
+    else if (value >= 50) return "alert-circle";
+    else return "close-circle";
+  }
 
-    const CircleDisplay = ({score , radivalue}: {score: number, radivalue: number}) =>{
-        return(
-            <CircularProgress
-                value={score}
-                radius={radivalue}
-                progressValueColor={'black'}
-                maxValue={100}
-                titleStyle={{ fontWeight: 'bold' }}
-                duration={250}
-                strokeColorConfig={[
-                    { color: '#9d1818', value: 0 },
-                    { color: 'red', value: 50 },
-                    { color: 'orange', value: 60 },
-                    { color: '#e7db43', value: 70 },
-                    { color: '#89e03b', value: 100 },
-                ]}
-            />
-        )
+  const InfoCard = ({ typescore }) => {
+    let title;
+    let info;
+    if (typescore == 'braking') {
+      title = <Text style={{fontSize: 18, fontWeight: 600, marginTop: 5}}>Braking</Text>;
+      info = <Text style={{fontSize: 16, fontWeight: 400, marginBottom: 5}}>Your braking is hard, we suggest taking your time with it.</Text>;
     }
-
+    if (typescore == 'speed') {
+      title = <Text style={{fontSize: 18, fontWeight: 600, marginTop: 5}}>Speed</Text>;
+      info = <Text style={{fontSize: 16, fontWeight: 400, marginBottom: 5}}>Your speed isn't great, follow the speed limits displayed.</Text>;
+    }
+    if (typescore == 'cornering') {
+      title = <Text style={{fontSize: 18, fontWeight: 600, marginTop: 5}}>Cornering</Text>;
+      info = <Text style={{fontSize: 16, fontWeight: 400, marginBottom: 5}}>You seem to be taking turns badly, we suggest you take your time with it.</Text>;
+    }
+    if (typescore == 'acceleration') {
+      title = <Text style={{fontSize: 18, fontWeight: 600, marginTop: 5}}>Acceleration</Text>;
+      info = <Text style={{fontSize: 16, fontWeight: 400, marginBottom: 5}}>Your acceleration isn't great, accelerate at a different rate from what you were.</Text>;
+    }
+    if (typescore == 'all-good') {
+      title = <Text style={{fontSize: 18, fontWeight: 600, marginTop: 5}}>Great job</Text>;
+      info = <Text style={{fontSize: 16, fontWeight: 400, marginBottom: 5}}>According to the score calculators, you're doing amazing!.</Text>;
+    }
     return (
-        <View style={styles.container}>
-            <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%"}}>
-                <IconButton 
-                    icon="arrow-left"
-                    iconColor="black" 
-                    size={30} 
-                    onPress={()=>{setShowTripSummary(false)}} 
-                />
-                    
-                <Text style={styles.Title}>Trip Summary</Text>
-                    
-                <IconButton 
-                    icon="arrow-left"
-                    iconColor="rgba(0,0,0,0)" 
-                    size={30} 
-                    onPress={() => { }}
-                />
-            </View>
-
-            <Text style={styles.Title}>Driving Scores</Text>
-            <View style={styles.progressContainer}>
-                <CircleDisplay
-                    score={recentTrip.score}
-                    radivalue={80}
-                />
-                <Text style={styles.text}>General rating</Text>
-                <View style={styles.progressrow}>
-                  <View style={styles.circleContainer}>
-                    <CircleDisplay
-                        score={recentTrip.acceleration}
-                        radivalue={45}
-                    />
-                    <Text style={styles.text}>Acceleration</Text>
-                  </View>
-                  <View style={styles.circleContainer}>
-                    <CircleDisplay
-                        score={recentTrip.speed}
-                        radivalue={45}
-                    />
-                    <Text style={styles.text}>Speed</Text>
-                  </View>
-                </View>
-                <View style={styles.progressrow}>
-                  <View style={styles.circleContainer}>
-                    <CircleDisplay
-                        score={recentTrip.braking}
-                        radivalue={45}
-                    />
-                    <Text style={styles.text}>Braking</Text>
-                  </View>
-                  <View style={styles.circleContainer}>
-                    <CircleDisplay
-                        score={recentTrip.cornering}
-                        radivalue={45}
-                    />
-                    <Text style={styles.text}>Cornering</Text>
-                  </View>
-                </View>
-            </View>
-            <Text style={styles.Title}>Bad Habits</Text>
-            <ScrollView 
-                style={styles.scrollContainer} 
-                contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}
-            >
-                {recentTrip.braking < 70 && (
-                    <InfoCard
-                        typescore="braking"
-                    />
-                )}
-                {recentTrip.acceleration < 70 && (
-                    <InfoCard
-                        typescore="acceleration"
-                    />
-                )}
-                {recentTrip.speed < 70 && (
-                    <InfoCard
-                        typescore="speed"
-                    />
-                )}
-                {recentTrip.cornering < 70 && (
-                    <InfoCard
-                        typescore="cornering"
-                    />
-                )}
-                {recentTrip.braking >= 70 && recentTrip.acceleration >= 70 && recentTrip.speed >= 70 && recentTrip.cornering >= 70 && (
-                    <InfoCard 
-                        typescore="all-good"
-                    />
-                )}
-            </ScrollView>
-        </View>
+      <View>
+        {title}
+        {info}
+      </View>
     );
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%", marginTop: "20%" }}>
+        <IconButton
+          icon="arrow-left"
+          iconColor="rgba(0,0,0,0)"
+          size={30}
+          onPress={() => { setShowTripSummary(false) }}
+        />
+
+        <Text style={{ color: "black", fontSize: 30, textAlign: "center", flex: 1 }}>
+          Trip Summary
+        </Text>
+
+        <IconButton
+          icon="arrow-left"
+          iconColor="rgba(0,0,0,0)"
+          size={30}
+          onPress={() => { }}
+        />
+      </View>
+
+      <View style={styles.progressContainer}>
+        <View style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: 25 }}>
+          <Icon
+            source={getMessageIcon(recentTrip.score)}
+            color={getMessageColor(recentTrip.score)}
+            size={100}
+          />
+          <Text style={{ fontSize: 18, fontWeight: 600, marginTop: 5 }}>{getMessage(recentTrip.score)}</Text>
+        </View>
+      </View>
+
+      <PagerView
+        style={styles.viewPager}
+        initialPage={0}
+        onPageSelected={(e) => setActivePage(e.nativeEvent.position)}
+      >
+        {/* Table window */}
+        <View style={styles.page}>
+          <View style={styles.tableContainer}>
+            <DataTable>
+              <DataTable.Header>
+                <DataTable.Title>Stat</DataTable.Title>
+                <DataTable.Title numeric>Score</DataTable.Title>
+              </DataTable.Header>
+
+              <DataTable.Row>
+                <DataTable.Cell>Overall</DataTable.Cell>
+                <DataTable.Cell numeric><Text style={{fontWeight: 800}}>{recentTrip.score}%</Text></DataTable.Cell>
+              </DataTable.Row>
+
+              <DataTable.Row>
+                <DataTable.Cell>Acceleration</DataTable.Cell>
+                <DataTable.Cell numeric>{recentTrip.acceleration}%</DataTable.Cell>
+              </DataTable.Row>
+
+              <DataTable.Row>
+                <DataTable.Cell>Speed</DataTable.Cell>
+                <DataTable.Cell numeric>{recentTrip.speed}%</DataTable.Cell>
+              </DataTable.Row>
+
+              <DataTable.Row>
+                <DataTable.Cell>Cornering</DataTable.Cell>
+                <DataTable.Cell numeric>{recentTrip.cornering}%</DataTable.Cell>
+              </DataTable.Row>
+
+              <DataTable.Row>
+                <DataTable.Cell>Braking</DataTable.Cell>
+                <DataTable.Cell numeric>{recentTrip.braking}%</DataTable.Cell>
+              </DataTable.Row>
+            </DataTable>
+          </View>
+        </View>
+
+        {/* Bad habits window */}
+        <View style={styles.page}>
+          <Text style={styles.Title}>Bad Habits</Text>
+          <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            {recentTrip.braking < 70 && <InfoCard typescore="braking" />}
+            {recentTrip.acceleration < 70 && <InfoCard typescore="acceleration" />}
+            {recentTrip.speed < 70 && <InfoCard typescore="speed" />}
+            {recentTrip.cornering < 70 && <InfoCard typescore="cornering" />}
+            {recentTrip.braking >= 70 && recentTrip.acceleration >= 70 && recentTrip.speed >= 70 && recentTrip.cornering >= 70 && (
+              <InfoCard typescore="all-good" />
+            )}
+            <InfoCard typescore="acceleration" />
+            <InfoCard typescore="speed" />
+            <InfoCard typescore="cornering" />
+          </ScrollView>
+        </View>
+      </PagerView>
+
+        <View style={{position: "absolute", bottom: 70, width: "90%", display: "flex", justifyContent: "center", alignItems: "center"}}>
+            <Divider bold style={{ top: 1, width: "100%"}} />
+            <View style={styles.pageIndicators}>
+                <View
+                style={[
+                    styles.pageIndicator,
+                    activePage === 0 ? styles.activeIndicator : styles.inactiveIndicator,
+                ]}
+                />
+                <View
+                style={[
+                    styles.pageIndicator,
+                    activePage === 1 ? styles.activeIndicator : styles.inactiveIndicator,
+                ]}
+                />
+            </View>
+            <Button icon="arrow-left" mode="contained" textColor="white" style={{width: "100%", height: 50, justifyContent: "center", alignContent: "center", top: 40}} onPress={() => {setShowTripSummary(false)}}>
+                Back Home
+            </Button>
+      </View>
+    </View>
+  );
 }
+
 const styles = StyleSheet.create({
-    background: {
-      display: "flex",
-      width: "100%",
-      height: "100%",
-      backgroundColor: "white"
-    },
-    Title:{
-      marginTop: 10,
-      marginBottom: 5,
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingTop: 15,
-    },
-    progressrow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        display: 'flex',
-        paddingTop: 5,
-        width: '100%',
-        marginBottom: 10,
-    },
-    circleContainer:{
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 175,
-    },
-    progressContainer: {
-        marginBottom: 5,
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 400,
-    },
-    scrollContainer: {
-        flex: 1,
-        height: 150,
-        width: 350,
-    },
-    scrollContent: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    text: {
-        fontSize: 15,
-        flexWrap: 'wrap',
-        maxWidth: '95%',
-    },
-    
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  viewPager: {
+    width: '100%',
+    flex: 1,
+    marginTop: 10
+  },
+  page: {
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    padding: 20,
+  },
+  progressContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 400,
+  },
+  tableContainer: {
+    width: '100%',
+    justifyContent: 'center',
+  },
+  pageIndicators: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 15
+  },
+  pageIndicator: {
+    width: 10,
+    height: 10,
+    margin: 5,
+    borderRadius: 5,
+  },
+  activeIndicator: {
+    backgroundColor: '#663399',
+  },
+  inactiveIndicator: {
+    backgroundColor: '#CCCCCC',
+  },
+  scrollContainer: {
+    width: 350,
+    maxHeight: 250,
+    overflow: "hidden",
+  },
+  scrollContent: {
+    justifyContent: 'flex-start',
+  },
+  Title: {
+    marginTop: 10,
+    marginBottom: 5,
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  text: {
+    fontSize: 15,
+    flexWrap: 'wrap',
+    maxWidth: '95%',
+  },
 });
