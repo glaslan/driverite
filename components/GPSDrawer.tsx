@@ -11,6 +11,8 @@ import { useTripStorage } from "@/hooks/useTripStorage";
 const GPSDrawer = ({ setTripStarted, setShowTripSummary, setRecentTrip, startTime }) => {
   const [speedMath, setSpeed] = useState(0);
   const [tripEnded, setTripEnded] = useState(false);
+  const [currentAverage, setCurrentAverage] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState('0m');
 
   const { speed, speedLimit, accelerationScore, speedScore, brakingScore, corneringScore } = useCalculateDriving(tripEnded);
   const { saveTrip } = useTripStorage();
@@ -24,8 +26,38 @@ const GPSDrawer = ({ setTripStarted, setShowTripSummary, setRecentTrip, startTim
   const [speedColor, setSpeedColor] = useState(getSpeedColor());
 
   useEffect(() => {
+    setCurrentAverage(Math.round((accelerationScore + speedScore + brakingScore + corneringScore) / 4));
+  }, [accelerationScore])
+
+  useEffect(() => {
     setSpeedColor(getSpeedColor());
   }, [speed, speedLimit]);
+
+  // Refresh drive time every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const diffMs = now.getTime() - startTime.getTime();
+      const diffMinutes = Math.floor(diffMs / 60000);
+
+      if (diffMinutes < 60) {
+        setElapsedTime(`${diffMinutes}m`);
+      } else {
+        const diffHours = Math.floor(diffMinutes / 60);
+        setElapsedTime(`${diffHours}h`);
+      }
+    }, 60000);
+
+    const initialDiffMinutes = Math.floor((new Date().getTime() - startTime.getTime()) / 60000);
+    if (initialDiffMinutes < 60) {
+      setElapsedTime(`${initialDiffMinutes}m`);
+    } else {
+      const initialDiffHours = Math.floor(initialDiffMinutes / 60);
+      setElapsedTime(`${initialDiffHours}h`);
+    }
+
+    return () => clearInterval(interval);
+  }, [startTime]);
 
   const sheetRef = useRef<BottomSheet>(null);
 
@@ -136,11 +168,11 @@ const GPSDrawer = ({ setTripStarted, setShowTripSummary, setRecentTrip, startTim
                       <View style={{display: "flex", flexDirection: "row", justifyContent: "center", gap: 15, marginTop: 15}}>
                        <Surface style={{width: "45%", height: 100, padding: 20, borderRadius: 15, backgroundColor: "white"}}>
                           <Text>DRIVE SCORE</Text>
-                          <Text style={{fontWeight: 600, fontSize: 32, marginTop: 5}}>82%</Text>
+                          <Text style={{fontWeight: 600, fontSize: 32, marginTop: 5}}>{currentAverage}%</Text>
                         </Surface>
                         <Surface style={{width: "45%", height: 100, padding: 20, borderRadius: 15, backgroundColor: "white"}}>
                           <Text>DRIVE TIME</Text>
-                          <Text style={{fontWeight: 600, fontSize: 32, marginTop: 5}}>2.4h</Text>
+                          <Text style={{fontWeight: 600, fontSize: 32, marginTop: 5}}>{elapsedTime}</Text>
                         </Surface>
                       </View>
 
