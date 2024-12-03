@@ -45,11 +45,11 @@ export const useTripStorage = () => {
     async function generateDummyData(amount = 10) {
       // Function favors higher scores
       function getRandomScore() {
-        if (Math.floor(Math.random() * 4) > 1) {
+        if (Math.floor(Math.random() * 6) > 1) {
           return Math.round((Math.random() * 30) + 70);
         }
 
-        return Math.round(Math.random() * 69);
+        return Math.round(Math.random() * 100);
       }
 
         await emptyDatabase();

@@ -3,10 +3,10 @@ import { Gyroscope, Accelerometer, DeviceMotion } from 'expo-sensors';
 
 export const useCalculateDriving = (tripEnded = false) => {
   const [speed, setSpeed] = useState(0); // Speed in km/h
-  const [accelerationScore, setAccelerationScore] = useState(0);
-  const [brakingScore, setBrakingScore] = useState(0);
-  const [corneringScore, setCorneringScore] = useState(0);
-  const [speedScore, setSpeedScore] = useState(100); // Score between 0-100
+  const [accelerationScore, setAccelerationScore] = useState(50);
+  const [brakingScore, setBrakingScore] = useState(50);
+  const [corneringScore, setCorneringScore] = useState(50);
+  const [speedScore, setSpeedScore] = useState(50);
   const [scoreCount, setScoreCount] = useState(0); // Number of updates
 
   const [speedLimit, setSpeedLimit] = useState(50);
@@ -18,7 +18,7 @@ export const useCalculateDriving = (tripEnded = false) => {
   const [lastSpeed, setLastSpeed] = useState(0);
 
   const breakingThreshold = -5;
-  const NOISE_THRESHOLD = 0.1; // Ignore accelerations below this in m/s²
+  const NOISE_THRESHOLD = 0.1;
 
   // Cornering state
   const gyroData = useRef({ x: 0, y: 0, z: 0 });
@@ -37,21 +37,16 @@ export const useCalculateDriving = (tripEnded = false) => {
   const calcSpeed = (acceleration, interval) => {
     const currentAcceleration = calculateAccelerationMagnitude(acceleration);
   
-    // Apply noise filtering
     if (Math.abs(currentAcceleration) < NOISE_THRESHOLD) {
       return;
     }
 
-    // Update velocity using trapezoidal integration
     const newVelocity = velocity + (currentAcceleration * interval);
     
-    // Apply decay factor to prevent drift
     const decayFactor = 1;
     const decayedVelocity = newVelocity * decayFactor;
     
-    // Convert to km/h and ensure non-negative
-    const speedInKmH = Math.max(0, Math.round(decayedVelocity * 3.6));
-    //if (speedInKmH > 0) console.log(speedInKmH + 0);    
+    const speedInKmH = Math.max(0, Math.round(decayedVelocity * 3.6)); 
 
     setVelocity(decayedVelocity);
     setLastSpeed(speed);
@@ -175,17 +170,6 @@ export const useCalculateDriving = (tripEnded = false) => {
 
     return () => accelerometerSubscription?.remove();
   }, []);
-
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     if (!tripEnded) {
-  //       setScoreCount((prev) => prev + 1);
-  //       calcBraking();
-  //     }
-  //   }, 500);
-
-  //   return () => clearInterval(intervalId);
-  // }, [tripEnded]);
 
   return {
     speed,

@@ -6,12 +6,10 @@ import { useTripStorage } from '@/hooks/useTripStorage';
 import GPSDrawer from '@/components/GPSDrawer';
 import StartPage from '@/components/StartPage';
 import TripPage from '@/components/TripPage';
-import * as Location from 'expo-location';
-import { fetchWeatherApi } from 'openmeteo';
 import ViewEndTrip from '@/components/ViewEndTrip';
 
 export default function HomeScreen() {
-  const { emptyDatabase } = useTripStorage();
+  const { generateDummyData } = useTripStorage();
   const [tripStarted, setTripStarted] = useState(false);
   const [showTripSummary, setShowTripSummary] = useState(false);
   const [startTime, setStartTime] = useState(new Date());
@@ -37,7 +35,7 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    //generateDummyData();
+    generateDummyData(8);
   }, []);
 
   return (
@@ -62,8 +60,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 1, // Ensures GPSDrawer is above MapAccelerometer
-    pointerEvents: 'auto', // GPSDrawer remains interactive
+    zIndex: 1,
+    pointerEvents: 'auto',
   },
   mapAccelerometer: {
     position: 'absolute',
@@ -71,7 +69,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 0, // MapAccelerometer is below GPSDrawer
-    pointerEvents: 'auto', // Allows MapAccelerometer to be interactive behind the GPSDrawer
+    zIndex: 0,
+    pointerEvents: 'auto',
   },
 });
