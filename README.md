@@ -1,5 +1,6 @@
 <h1 align="center>Driverite</h1>
-<p align="center">_Drive smart, drive right_</p>
+   
+<p align="center">Drive smart, drive right</p>
 
 # About
 
