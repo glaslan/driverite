@@ -1,16 +1,16 @@
-<h1 align="center>
-   Driverite
+<h1 align="center">
+   Driverite 
 </h1>
    
 <p align="center">
-   Drive smart, drive right
+   <em>Drive smart, drive right</em> 🚗
 </p>
 
-# About
+# About ❔
 
 Driverite is a Expo/React Native mobile application for monitoring driving habits. 
 
-# Get started
+# Get Started 🔑
 
 1. Clone the repo
 
