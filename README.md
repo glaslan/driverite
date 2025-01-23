@@ -1,15 +1,25 @@
-# Welcome to Driverite
+<h1 align="center>Driverite</h1>
+<p align="center">_Drive smart, drive right_</p>
 
+# About
 
-## Get started
+Driverite is a Expo/React Native mobile application for monitoring driving habits. 
 
-1. Install dependencies
+# Get started
+
+1. Clone the repo
+
+   ```bash
+   git clone https://github.com/glaslan/driverite.git
+   ```
+
+2. Install dependencies
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. Start the app
 
    ```bash
     npx expo start
